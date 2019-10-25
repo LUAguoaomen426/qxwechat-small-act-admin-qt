@@ -60,6 +60,19 @@ export const constantRouterMap = [
     ]
   },
   {
+    path: '/act',
+    component: Layout,
+    redirect: 'noredirect',
+    children: [
+      {
+        path: 'mall',
+        component: () => import('@/views/act/mall/index'),
+        name: '活动商场配置',
+        meta: { title: '活动商场配置', icon: 'index', noCache: true, affix: true }
+      }
+    ]
+  },
+  {
     path: '/user',
     component: Layout,
     hidden: true,
