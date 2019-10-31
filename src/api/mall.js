@@ -17,8 +17,14 @@ export function del(id) {
 
 export function edit(data) {
   return request({
-    url: 'api/tbWapMall',
+    url: 'api/mall',
     method: 'put',
     data
+  })
+}
+export function async() {
+  return request({
+    url: 'api/mallBaseInfo/async',
+    method: 'get'
   })
 }

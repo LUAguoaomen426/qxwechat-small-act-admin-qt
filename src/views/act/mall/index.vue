@@ -3,69 +3,125 @@
     <div class="head-container">
       <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
         <el-menu-item index="1">商场</el-menu-item>
-        <el-menu-item index="2">特殊链接</el-menu-item>
+        <el-menu-item index="2">广告位</el-menu-item>
         <el-menu-item index="3">抽奖信息</el-menu-item>
-        <div v-if="innerShow==1" style="display: inline-block;margin: 20px 2px;float:right;">
-          <el-input v-model="deptName" clearable placeholder="输入部门名称搜索" prefix-icon="el-icon-search" style="width: 200px;" class="filter-item" @input="getDeptDatas"/>
-          <el-button
-            v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']"
-            class="filter-item"
-            size="mini"
-            type="primary">搜索
-          </el-button>
-          <el-button v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']" class="filter-item" size="mini" type="primary" icon="el-icon-upload" @click="updataE">上传
-          </el-button>
-          <el-button v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']" class="filter-item" size="mini" type="primary" icon="el-icon-success" @click="keepE">保存
-          </el-button>
-        </div>
-        <div v-if="innerShow==2" style="display: inline-block;margin: 20px 2px;float:right;">
-          <el-button v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']" class="importDefault" type="warning" @click="addAdS">增加广告位
-          </el-button>
-        </div>
-        <div v-if="innerShow==3" style="display: inline-block;margin: 20px 2px;float:right;">
-          <el-button v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']" class="importDefault" type="warning" @click="newDrawData">新增
-          </el-button>
-        </div>
       </el-menu>
+      <div v-if="innerShow==1" style="display: inline-block;margin: 20px 2px;">
+        <el-input v-model="mallSearch" clearable placeholder="请输入内容" prefix-icon="el-icon-search" style="width: 200px;" class="filter-item"/>
+        <el-button
+          v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']"
+          class="filter-item"
+          icon="el-icon-search"
+          size="mini"
+          type="success"
+          @click="search">搜索
+        </el-button>
+        <el-upload
+          v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']"
+          :limit="1"
+          :show-file-list="false"
+          :action="'/api/' + this.$route.query.actCode + '/mallInfo/upload'"
+          :headers="myHeaders"
+          :on-success="handleSuccess"
+          :before-upload="handleBeforeUpload"
+          class="filter-item"
+          style="margin-bottom:auto;">
+          <el-button class="filter-item" size="mini" icon="el-icon-upload" type="primary">点击上传</el-button>
+        </el-upload>
+        <!--<el-button  class="filter-item" size="mini" type="primary" icon="el-icon-upload" @click="updataE">上传-->
+        <!--</el-button>-->
+        <el-button v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']" class="filter-item" size="mini" type="primary" icon="el-icon-success" @click="keepE">保存
+        </el-button>
+      </div>
+      <div v-if="innerShow==2" style="display: inline-block;margin: 20px 2px;">
+        <el-button v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']" class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="addAdS">新增
+        </el-button>
+      </div>
+      <div v-if="innerShow==3" style="display: inline-block;margin: 20px 2px;">
+        <el-button v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']" class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="newDrawData">新增
+        </el-button>
+      </div>
     </div>
     <!--    商场   -->
-    <el-table v-if="innerShow==1" :data="tableData" border style="width: 100%">
-      <el-table-column prop="omsCode" label="omsCode" width="180"/>
-      <el-table-column prop="mallCode" label="mallCode" width="180"/>
+    <el-table v-loading="loading" v-if="innerShow==1" key="tableData" :data="newTableData" style="width: 100%">
+      <el-table-column
+        type="index"/>
+      <el-table-column prop="omsCode" label="omsCode"/>
+      <el-table-column prop="mallCode" label="mallCode"/>
       <el-table-column prop="province" label="省"/>
       <el-table-column prop="city" label="城市"/>
       <el-table-column prop="mallName" label="商场"/>
-      <el-table-column prop="flag" label="是否参加">
+      <el-table-column prop="isJoin" label="是否参加">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.flag" active-color="#13ce66" inactive-color="#ff4949"/>
+          <el-switch
+            v-model="scope.row.isJoin"
+            active-color="#13ce66"
+            inactive-color="#ff4949"/>
         </template>
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_EDIT']" size="small" type="text">刷新</el-button>
+          <el-button v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_EDIT']" size="small" type="text" @click="refresh(scope.row)">刷新</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <!--    特殊链接   -->
-    <el-table v-if="innerShow==2" :data="linkData" style="width: 100%">
+    <!--    广告位   -->
+    <el-table v-loading="linkLoading" v-if="innerShow==2" :data="linkData" style="width: 100%">
+      <el-table-column
+        type="index"/>
       <el-table-column prop="name" label="名称"/>
-      <el-table-column prop="type" label="类型"/>
-      <el-table-column prop="specCode" label="specCode"/>
-      <el-table-column prop="url" label="url"/>
-      <el-table-column prop="imgUrl" label="图片"/>
+      <el-table-column prop="type" label="类型">
+        <template slot-scope="scope">
+          {{ scope.row.type == 1 ?'内部':'外部' }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="specCode" label="编号"/>
+      <el-table-column prop="url" label="url">
+        <template slot-scope="scope">
+          {{ scope.row.url }}
+          <copy v-model="scope.row.url" />
+        </template>
+      </el-table-column>
+      <el-table-column prop="showImage" label="图片">
+        <template slot-scope="scope">
+          <img :src="scope.row.showImage" style="height:60px;">
+        </template>
+      </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_EDIT']" size="small" type="text" @click="changeAd">修改</el-button>
-          <el-button v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_EDIT']" size="small" type="text" @click="deleteAd">删除</el-button>
-          <el-button v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_EDIT']" size="small" type="text">上传</el-button>
+          <el-button v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_EDIT']" size="small" type="text" @click="changeAd(scope.row)">修改</el-button>
+          <el-button v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_EDIT']" size="small" type="text" @click="deleteAd(scope.row)">删除</el-button>
+          <el-upload
+            v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']"
+            :limit="1"
+            :show-file-list="false"
+            :headers="myHeaders"
+            :data="actSpeclinkUploadParam"
+            :on-success="handleSecondSuccess"
+            :before-upload="handleSecondBeforeUpload(scope.row)"
+            :action="'/api/' + actCode + '/actSpeclink/upload'"
+            class="filter-item"
+            style="margin-bottom:auto;">
+            <el-button size="mini" type="text" @click="adUpload(scope.row)">上传</el-button>
+          </el-upload>
         </template>
       </el-table-column>
     </el-table>
     <!--    抽奖信息    -->
-    <el-table v-if="innerShow==3" :data="luckDraw" style="width: 100%">
-      <el-table-column prop="actMark" label="标识"/>
-      <el-table-column prop="startTime" label="开始时间"/>
-      <el-table-column prop="endTime" label="结束时间"/>
+    <el-table v-loading="darwLoading" v-if="innerShow==3" :data="luckDraw" style="width: 100%">
+      <el-table-column
+        type="index"/>
+      <el-table-column prop="drawId" label="标识"/>
+      <el-table-column prop="startTime" label="开始时间">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.startTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="endTime" label="结束时间">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.endTime) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_EDIT']" size="small" type="text" @click="changeDraw">修改</el-button>
@@ -74,38 +130,38 @@
       </el-table-column>
     </el-table>
     <!-- 添加广告位开始 -->
-    <el-dialog :visible.sync="addAdShow" append-to-body="true" title="特殊链接新建">
-      <el-form :model="addAdForm" label-width="80px">
+    <el-dialog :visible.sync="addAdShow" append-to-body="true" title="新增" width="60%">
+      <el-form ref="form" :model="addAdForm" label-width="80px">
         <el-row>
           <el-col :span="12">
             <el-form-item label="名称">
-              <el-input v-model="addAdForm.name"/>
+              <el-input v-model="addAdForm.name" style="width: 200px" placeholder="请输入广告位名称"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="specCode">
-              <el-input v-model="addAdForm.specCode"/>
+            <el-form-item label="编号">
+              <el-input v-model="addAdForm.specCode" style="width: 200px" placeholder="请输入唯一编号"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="类型">
-              <el-select v-model="addAdForm.type" placeholder="请选择">
+              <el-select v-model="addAdForm.type" placeholder="请选择" style="width: 200px">
                 <el-option
                   key="0"
-                  label="广告"
+                  label="外部"
                   value="0"/>
                 <el-option
                   key="1"
-                  label="特殊链接"
+                  label="内部"
                   value="1"/>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="限制时间">
-              <el-select v-model="addAdForm.haveTL" placeholder="请选择">
+              <el-select v-model="addAdForm.haveTL" placeholder="请选择" style="width: 200px">
                 <el-option
                   :key="addAdForm.haveTL"
                   label="否"
@@ -115,101 +171,82 @@
                   label="是"
                   value="T"/>
               </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="20">
-            <el-form-item label="url">
-              <el-input v-model="addAdForm.url"/>
             </el-form-item>
           </el-col>
         </el-row>
         <div v-if="addAdForm.haveTL == 'T'">
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="开放时间">
-                <el-date-picker
-                  v-model="addAdForm.timeLimit.startTime"
-                  type="datetime"
-                  value-format="yyyy-MM-dd HH:mm:ss"
-                  placeholder="选择日期"/>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="结束时间">
-                <el-date-picker
-                  v-model="addAdForm.timeLimit.endTime"
-                  type="datetime"
-                  value-format="yyyy-MM-dd HH:mm:ss"
-                  placeholder="选择日期"/>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </div>
-        <div v-if="addAdForm.type == 0">
-          <el-form-item label="图片地址">
-            <el-upload
-              ref="upload"
-              :on-preview="handlePreview1"
-              :on-success="adUploadSuccess"
-              :on-remove="adhandleRemove"
-              :before-remove="beforeRemove1"
-              :limit="1"
-              :on-exceed="handleExceed1"
-              :file-list="specLinkFileList"
-              class="upload-demo"
-              action="https://wxxcx-api.chinaredstar.com/file/upload"
-              multiple
-              show-file-list="false"
-              style="margin-bottom: 0;">
-              <el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">{{ addAdForm.showImage }}</div>
-            </el-upload>
+          <el-form-item label="显示时间">
+            <el-date-picker
+              v-model="addAdForm.time"
+              type="datetimerange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              style="width: 563px"/>
           </el-form-item>
         </div>
-        <el-form-item>
-          <el-button type="primary" @click="sureAddAd">立即增加</el-button>
-          <el-button @click="cancelAddAd">取消</el-button>
+        <el-row>
+          <el-col :span="20">
+            <el-form-item label="url">
+              <el-input v-model="addAdForm.url" style="width: 563px" placeholder="请输入链接地址"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="图片">
+          <el-upload
+            ref="upload"
+            v-model="addAdForm.showImage"
+            :on-exceed="handleExceed"
+            :on-success="uploadShowImage"
+            limit="1"
+            class="upload-demo"
+            action="https://wxxcx-api.chinaredstar.com/file/upload"
+            show-file-list="false"
+            list-type="picture"
+            style="margin-bottom: 0;">
+            <el-button size="small" type="primary">点击上传</el-button>
+          </el-upload>
         </el-form-item>
       </el-form>
-      <!--</div>-->
-      <!--</div>-->
+      <div slot="footer" class="dialog-footer">
+        <el-button type="text" @click="cancelAddAd">取消</el-button>
+        <el-button :loading="btnLoading" type="primary" @click="sureAddAd">确认</el-button>
+      </div>
     </el-dialog>
     <!-- 特殊链接修改开始 -->
-    <el-dialog :visible.sync="shoppingListShow" append-to-body="true" title="特殊链接修改">
-
+    <el-dialog :visible.sync="shoppingListShow" append-to-body="true" title="修改" width="60%">
       <el-form ref="newChangeAd" :model="newChangeAd" label-width="80px">
         <el-row>
           <el-col :span="12">
             <el-form-item label="名称">
-              <el-input v-model="newChangeAd.name"/>
+              <el-input v-model="newChangeAd.name" style="width: 200px" placeholder="请输入广告位名称"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="specCode">
-              <el-input v-model="newChangeAd.specCode" disabled/>
+            <el-form-item label="编号">
+              <el-input v-model="newChangeAd.specCode" disabled style="width: 200px" placeholder="请输入唯一编号"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="类型">
-              <el-select v-model="newChangeAd.type" placeholder="请选择">
+              <el-select v-model="newChangeAd.type" placeholder="请选择" style="width: 200px">
                 <el-option
                   key="0"
-                  label="广告"
-                  value="0"/>
+                  :value="0"
+                  label="外部"/>
                 <el-option
                   key="1"
-                  label="特殊链接"
-                  value="1"/>
+                  :value="1"
+                  label="内部"/>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="限制时间">
-              <el-select v-model="newChangeAd.haveTL" placeholder="请选择">
+              <el-select v-model="newChangeAd.haveTL" placeholder="请选择" style="width: 200px">
                 <el-option
                   :key="newChangeAd.haveTL"
                   label="否"
@@ -222,77 +259,64 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <div v-if="newChangeAd.haveTL == 'T'">
+          <el-form-item label="显示时间">
+            <el-date-picker
+              v-model="newChangeAd.time"
+              type="datetimerange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              style="width: 563px"/>
+          </el-form-item>
+        </div>
         <el-row>
           <el-col :span="20">
             <el-form-item label="url">
-              <el-input v-model="newChangeAd.url"/>
+              <el-input v-model="newChangeAd.url" style="width: 563px" placeholder="请输入链接地址"/>
             </el-form-item>
           </el-col>
         </el-row>
-        <div v-if="newChangeAd.type == 0">
-          <el-form-item label="图片地址">
-            <el-upload
-              ref="upload"
-              :on-preview="handlePreview1"
-              :on-success="adChangeUploadSuccess"
-              :on-remove="adChangehandleRemove"
-              :before-remove="beforeRemove1"
-              :limit="1"
-              :on-exceed="handleExceed1"
-              :file-list="specLinkFileList"
-              class="upload-demo"
-              action="https://wxxcx-api.chinaredstar.com/file/upload"
-              multiple
-              show-file-list="false"
-              style="margin-bottom: 0;">
-              <el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">{{ newChangeAd.showImage }}</div>
-            </el-upload>
-          </el-form-item>
-        </div>
-        <div v-if="newChangeAd.haveTL == 'T'">
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="开放时间">
-                <el-date-picker
-                  v-model="newChangeAd.timeLimit.startTime"
-                  type="datetime"
-                  value-format="yyyy-MM-dd HH:mm:ss"
-                  placeholder="选择日期"/>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="结束时间">
-                <el-date-picker
-                  v-model="newChangeAd.timeLimit.endTime"
-                  type="datetime"
-                  value-format="yyyy-MM-dd HH:mm:ss"
-                  placeholder="选择日期"/>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </div>
+        <el-form-item label="图片">
+          <el-upload
+            ref="upload"
+            :file-list="newChangeAd.fileList"
+            :on-exceed="handleExceed"
+            :on-success="uploadShowImage"
+            limit="1"
+            class="upload-demo"
+            action="https://wxxcx-api.chinaredstar.com/file/upload"
+            show-file-list="false"
+            list-type="picture"
+            style="margin-bottom: 0;">
+            <el-button size="small" type="primary">点击上传</el-button>
+          </el-upload>
+        </el-form-item>
         <el-collapse accordion>
           <el-collapse-item>
             <template slot="title">
-              特殊链接-商场开关<i class="header-icon el-icon-info"/>
+              广告位-商场配置<i class="header-icon el-icon-info"/>
             </template>
-            <div v-for="item of newChangeAd.mallList" class="switch_box">
-              <span class="switch_text2">{{ item.mallName }}</span>
-              <span class="switch_text3">{{ item.omsCode }}</span>
+            <div v-for="item of newChangeAd.mallList" :key="item.omsCode" class="switch_box" style="padding-left: 75px;">
+              <span class="switch_text3" style="width: 100px;display: inline-block;">{{ item.omsCode }}</span>
+              <span class="switch_text3" style="width: 100px;display: inline-block;">{{ item.mallCode }}</span>
+              <span class="switch_text2" style="width: 180px;display: inline-block;">{{ item.mallName }}</span>
               <el-switch
                 v-model="item.linkShow"
                 active-color="#13ce66"
                 inactive-color="#ff4949"
+                active-text="启用"
+                inactive-text="停用"
                 @change="adChengInner(item)"/>
             </div>
           </el-collapse-item>
         </el-collapse>
-        <el-form-item style="margin-top:8px;">
-          <el-button type="primary" @click="sureChangeShopping">确认修改</el-button>
-          <el-button type="primary" @click="noChangeShopping">取消</el-button>
-        </el-form-item>
       </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="text" @click="noChangeShopping">取消</el-button>
+        <el-button :loading="btnLoading" type="primary" @click="sureChangeShopping">确认</el-button>
+      </div>
     </el-dialog>
     <!--    新增 修改抽奖信息    -->
     <el-dialog :visible.sync="drawDialogShowFlag" append-to-body="true" title="抽奖信息" width="65%">
@@ -345,7 +369,7 @@
         </el-row>
 
         <el-row class="row-bg prize-border">
-          <el-col v-for=" n in drawData.prizeCount " :span="12" class="parizeCode">
+          <el-col v-for=" n in drawData.prizeCount " :key="n" :span="12" class="parizeCode">
             <span> 奖品 {{ n }} 劵ID：</span>
             <el-input
               v-model="drawData.prizeCode[n - 1 ]"
@@ -383,6 +407,7 @@
               </el-table-column>
               <el-table-column
                 v-for="col in tableTitle"
+                :key="col"
                 :prop="col.prop"
                 :label="col.label"
                 width="150">
@@ -412,14 +437,6 @@
           </el-col>
         </el-row>
     </div></el-dialog>
-    <!--分页组件-->
-    <el-pagination
-      :total="total"
-      :current-page="page + 1"
-      style="margin-top: 8px;"
-      layout="total, prev, pager, next, sizes"
-      @size-change="sizeChange"
-      @current-change="pageChange"/>
   </div>
 </template>
 
@@ -428,55 +445,21 @@ import checkPermission from '@/utils/permission'
 import initData from '@/mixins/initData'
 import { parseTime } from '@/utils/index'
 import eForm from '../form'
+import { getMallInfo, getLinkData, getDrawData, saveMallInfo, refresh, addSpecLink, saveSpecLink, deleteSpecLink } from '@/api/actMall'
+import copy from '@/components/copy/copyToClipboard'
+import { getToken } from '@/utils/auth'
 
 export default {
-  components: { eForm },
+  components: { eForm, copy },
   mixins: [initData],
   data: function() {
     return {
-      delLoading: false,
-      tableData: [{
-        omsCode: '1001',
-        mallCode: '10059',
-        province: '上海市',
-        city: '上海市',
-        mallName: '上海汶水商场',
-        flag: true
-      }, {
-        omsCode: '1001',
-        mallCode: '10059',
-        province: '上海市',
-        city: '上海市',
-        mallName: '上海汶水商场',
-        flag: true
-      }, {
-        omsCode: '1001',
-        mallCode: '10059',
-        province: '上海市',
-        city: '上海市',
-        mallName: '上海汶水商场',
-        flag: false
-      }, {
-        omsCode: '1001',
-        mallCode: '10059',
-        province: '上海市',
-        city: '上海市',
-        mallName: '上海汶水商场',
-        flag: true
-      }],
-      linkData: [{
-        name: '超级品类节',
-        type: '特殊链接',
-        specCode: 'november-spec1',
-        url: '/act/act201911_h5_category.html#/',
-        imgUrl: ''
-      }, {
-        name: '超级品类节',
-        type: '特殊链接',
-        specCode: 'november-spec1',
-        url: '/act/act201911_h5_category.html#/',
-        imgUrl: ''
-      }],
+      btnLoading: false,
+      tableData: [],
+      newTableData: [],
+      newChangeAdMallList: [],
+      actSpeclinkUploadParam: { specCode: '' },
+      linkData: [],
       deptName: '',
       dialogVisible: false,
       activeIndex: '1',
@@ -488,37 +471,81 @@ export default {
         url: '',
         showImage: '',
         haveTL: null,
-        timeLimit: {}
+        time: []
       },
       shoppingListShow: false,
-      newChangeAd: {},
-      luckDraw: [{
-        actMark: '1',
-        startTime: '2019-10-21 00:00:00',
-        endTime: '2019-10-27 23:59:59'
-      }],
+      newChangeAd: {
+        name: '',
+        specCode: '',
+        url: '',
+        type: '',
+        showImage: '',
+        haveTL: null,
+        time: [],
+        mallList: [],
+        fileList: []
+      },
+      luckDraw: [],
       drawData: {},
       drawDialogShowFlag: false,
-      active: 0
+      active: 0,
+      loading: true,
+      linkLoading: true,
+      darwLoading: true,
+      mallSearch: '',
+      myHeaders: { Authorization: 'Bearer ' + getToken() },
+      actCode: ''
     }
   },
   created() {
     this.$nextTick(() => {
-      this.init()
+      this.handleSelect('1', 1)
     })
   },
   methods: {
     parseTime,
     checkPermission,
-    beforeInit() {
-      this.url = 'api/actModule'
-      // const sort = 'id,desc'
-      // this.params = { page: this.page, size: this.size, sort: sort }
-      return true
-    },
     // tab切换
     handleSelect(key, keyPath) {
       this.innerShow = key
+      const actCode = this.$route.query.actCode
+      this.actCode = actCode
+      this.loading = true
+      this.linkLoading = true
+      this.darwLoading = true
+      if (key === '1') {
+        // 商场
+        getMallInfo(actCode).then(res => {
+          console.log('配置——商场数据', res)
+          this.newTableData = res.dataMap.mallsInfo
+          this.tableData = this.newTableData
+          this.loading = false
+        }).catch(err => {
+          this.loading = false
+          console.log(err.response.data.message)
+        })
+      } else if (key === '2') {
+        // 广告位
+        getLinkData(actCode).then(res => {
+          console.log('配置——广告位数据', res)
+          this.linkData = res.dataMap.specLinks
+          this.linkLoading = false
+        }).catch(err => {
+          this.linkLoading = false
+          console.log(err.response.data.message)
+        })
+      } else if (key === '3') {
+        // 抽奖
+        getDrawData(actCode).then(res => {
+          console.log('配置——抽奖数据', res)
+          this.luckDraw = res.dataMap.wapactdraw
+          this.darwLoading = false
+        }).catch(err => {
+          this.darwLoading = false
+          console.log(err.response.data.message)
+        })
+      }
+
       console.log(key, keyPath)
     },
     // 上传
@@ -536,6 +563,27 @@ export default {
       this.$confirm('确认保存？')
         .then(_ => {
           console.log('确认')
+          this.loading = true
+          saveMallInfo(this.$route.query.actCode, this.tableData).then(res => {
+            console.log('保存活动商场数据', res)
+            if (res.code !== 200) {
+              this.$notify({
+                title: res.message,
+                type: 'error',
+                duration: 2500
+              })
+            } else {
+              this.$notify({
+                title: '保存成功',
+                type: 'success',
+                duration: 2500
+              })
+            }
+            this.loading = false
+          }).catch(err => {
+            this.loading = false
+            console.log(err.response.data.message)
+          })
         })
         .catch(_ => {
           console.log('取消')
@@ -545,15 +593,58 @@ export default {
     addAdS() {
       this.addAdShow = true
     },
+    // 取消新增广告位
+    cancelAddAd() {
+      this.addAdShow = false
+    },
     // 修改广告位
-    changeAd() {
+    changeAd(data) {
+      console.log('修改广告位', data)
       this.shoppingListShow = true
+      this.newChangeAd = data
+      if (data.showImage !== '' && data.showImage) {
+        this.newChangeAd.fileList = [{ name: data.showImage, url: data.showImage }]
+      }
+      if (data.timeLimit !== '' && data.timeLimit) {
+        this.newChangeAd.time = []
+        const timeLimit = JSON.parse(data.timeLimit)
+        this.newChangeAd.time.push(timeLimit.startTime)
+        this.newChangeAd.time.push(timeLimit.endTime)
+      }
+      this.newChangeAdMallList = []
     },
     // 删除广告位
-    deleteAd() {
+    deleteAd(data) {
       this.$confirm('确认删除广告位？')
         .then(_ => {
           console.log('确认')
+          this.linkLoading = true
+          deleteSpecLink(this.$route.query.actCode, data).then(res => {
+            console.log('删除广告位', res)
+            if (res.code !== 200) {
+              this.$notify({
+                title: res.message,
+                type: 'error',
+                duration: 2500
+              })
+            } else {
+              this.$notify({
+                title: '删除成功',
+                type: 'success',
+                duration: 2500
+              })
+              const newLinkData = []
+              this.linkData.forEach(function(element, index) {
+                if (element.specCode !== data.specCode) {
+                  newLinkData.push(element)
+                }
+              })
+              this.linkData = newLinkData
+            }
+            this.linkLoading = false
+          }).catch(err => {
+            console.log(err.response.data.message)
+          })
         })
         .catch(_ => {
           console.log('取消')
@@ -575,6 +666,141 @@ export default {
     },
     getDeptDatas() {
 
+    },
+    search() {
+      var inputVal = this.mallSearch
+      console.log('搜索', inputVal, this.tableData)
+      if (inputVal) {
+        this.newTableData = this.tableData.filter(function(product) {
+          return Object.keys(product).some(function(key) {
+            return String(product[key]).toLowerCase().indexOf(inputVal) > -1
+          })
+        })
+      } else {
+        this.newTableData = this.tableData
+      }
+    },
+    handleSuccess(res, file, fileList) {
+      this.handleSelect('1', 1)
+      this.$notify({
+        title: '上传成功',
+        type: 'success',
+        duration: 2500
+      })
+    },
+    handleSecondSuccess(res, file, fileList) {
+      this.handleSelect('2', 2)
+      this.$notify({
+        title: '上传成功',
+        type: 'success',
+        duration: 2500
+      })
+    },
+    handleBeforeUpload(file) {
+      this.newTableData = []
+    },
+    handleSecondBeforeUpload(data) {
+      this.actSpeclinkUploadParam.specCode = data.specCode
+    },
+    refresh(data) {
+      console.log('刷新', data)
+      refresh(this.$route.query.actCode, data.omsCode).then(res => {
+        console.log('刷新活动商场数据', res)
+        if (res.code !== 200) {
+          this.$notify({
+            title: res.message,
+            type: 'error',
+            duration: 2500
+          })
+        } else {
+          this.$notify({
+            title: '刷新成功',
+            type: 'success',
+            duration: 2500
+          })
+        }
+      }).catch(err => {
+        console.log(err.response.data.message)
+      })
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+    },
+    sureAddAd() {
+      this.btnLoading = true
+      console.log('新增广告位', this.addAdForm)
+      addSpecLink(this.$route.query.actCode, this.addAdForm).then(res => {
+        console.log('新增广告位接口返回', res)
+        if (res.code !== 200) {
+          this.$notify({
+            title: res.message,
+            type: 'error',
+            duration: 2500
+          })
+        } else {
+          this.$notify({
+            title: '新增成功',
+            type: 'success',
+            duration: 2500
+          })
+          this.handleSelect('2', 2)
+          this.addAdShow = false
+        }
+        this.btnLoading = false
+      }).catch(err => {
+        this.linkLoading = false
+        this.btnLoading = false
+        console.log(err.response.data.message)
+      })
+    },
+    uploadShowImage(res, file) {
+      console.log('图片上传', res, file)
+      this.addAdForm.showImage = res.dataMap.fileUrl
+    },
+    // 修改广告位-取消按钮
+    noChangeShopping() {
+      this.shoppingListShow = false
+    },
+    // 修改广告位里商场开关
+    adChengInner(item) {
+      console.log(this.newChangeAdMallList)
+      this.newChangeAdMallList.push(item)
+    },
+    // 修改广告位-确定按钮
+    sureChangeShopping() {
+      this.btnLoading = true
+      console.log('修改广告位', this.newChangeAd)
+
+      this.newChangeAd.changeMallList = this.newChangeAdMallList
+      saveSpecLink(this.$route.query.actCode, this.newChangeAd).then(res => {
+        console.log('修改广告位接口返回', res)
+        // this.linkLoading = true
+        if (res.code !== 200) {
+          this.$notify({
+            title: res.message,
+            type: 'error',
+            duration: 2500
+          })
+        } else {
+          // this.linkLoading = false
+          this.$notify({
+            title: '修改成功',
+            type: 'success',
+            duration: 2500
+          })
+          this.handleSelect('2', 2)
+          this.shoppingListShow = false
+        }
+        this.btnLoading = false
+      }).catch(err => {
+        this.linkLoading = false
+        this.btnLoading = false
+        console.log(err.response.data.message)
+      })
+    },
+    // 广告位——上传
+    adUpload() {
+      // this.linkLoading = true
     }
   }
 }

@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function add(data) {
   return request({
-    url: 'api/actModule',
+    url: 'api/actInfo/add',
     method: 'post',
     data
   })
@@ -17,8 +17,15 @@ export function del(id) {
 
 export function edit(data) {
   return request({
-    url: 'api/actModule',
-    method: 'put',
+    url: 'api/actInfo/save',
+    method: 'post',
     data
+  })
+}
+
+export function changeLevel(data) {
+  return request({
+    url: 'api/actInfo/changeLevel?actCode=' + data.actCode + '&isDown=' + data.isDown,
+    method: 'post'
   })
 }

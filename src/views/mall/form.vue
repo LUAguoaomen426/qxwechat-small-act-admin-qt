@@ -1,39 +1,60 @@
 <template>
-  <el-dialog :append-to-body="true" :close-on-click-modal="false" :before-close="cancel" :visible.sync="dialog" :title="isAdd ? '新增' : '编辑'" width="500px">
-    <el-form ref="form" :model="form" :rules="rules" size="small" label-width="80px">
-      <el-form-item label="商场编码" prop="omsCode">
-        <el-input v-model="form.omsCode" style="width: 370px;"/>
+  <el-dialog :append-to-body="true" :close-on-click-modal="false" :before-close="cancel" :visible.sync="dialog" :title="isAdd ? '新增' : '编辑'" width="50%">
+    <el-form ref="form" :model="form" :rules="rules" size="small" label-width="90px">
+      <el-form-item label="商场名称" prop="mallName">
+        <el-input v-model="form.mallName" style="width: 457px;"/>
       </el-form-item>
-      <el-form-item label="商场编码" prop="mallCode">
-        <el-input v-model="form.mallCode" style="width: 370px;"/>
-      </el-form-item>
-      <el-form-item label="商场名称" >
-        <el-input v-model="form.mallName" style="width: 370px;"/>
-      </el-form-item>
-      <el-form-item label="省份" >
-        <el-input v-model="form.province" style="width: 370px;"/>
-      </el-form-item>
-      <el-form-item label="城市" >
-        <el-input v-model="form.city" style="width: 370px;"/>
-      </el-form-item>
-      <el-form-item label="自营商场标识" >
-        <el-input v-model="form.selfFlag" style="width: 370px;"/>
-      </el-form-item>
-      <el-form-item label="活动列表商场启用状态" >
-        <el-input v-model="form.entranceEnable" style="width: 370px;"/>
-      </el-form-item>
-      <el-form-item label="是否为城市默认商场" >
-        <el-input v-model="form.defaultEnable" style="width: 370px;"/>
-      </el-form-item>
-      <el-form-item label="是否参与活动的默认值 0不参与 1 参与" >
-        <el-input v-model="form.defultJoin" style="width: 370px;"/>
-      </el-form-item>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="omsCode" prop="omsCode">
+            <el-input v-model="form.omsCode" style="width: 160px;" disabled/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="mallCode" prop="mallCode">
+            <el-input v-model="form.mallCode" style="width: 160px;" disabled/>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="省份" prop="province">
+            <el-input v-model="form.province" style="width: 160px;"/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="城市" prop="city">
+            <el-input v-model="form.city" style="width: 160px;"/>
+          </el-form-item>
+        </el-col>
+      </el-row>
       <el-form-item label="详细地址" >
-        <el-input v-model="form.detailAddress" style="width: 370px;"/>
+        <el-input v-model="form.detailAddress" style="width: 457px;"/>
       </el-form-item>
-      <el-form-item label="是否为瞄零商场 0不是 1是" >
-        <el-input v-model="form.isMl" style="width: 370px;"/>
-      </el-form-item>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="是否参与活动列表" >
+            <el-switch v-model="form.entranceEnable" style="width: 160px;"/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="是否为城市默认商场" >
+            <el-switch v-model="form.defaultEnable" style="width: 160px;"/>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="是否自营" >
+            <el-switch v-model="form.selfFlag" style="width: 160px;"/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="是否为瞄零商场" >
+            <el-switch v-model="form.isMl" style="width: 160px;"/>
+          </el-form-item>
+        </el-col>
+      </el-row>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button type="text" @click="cancel">取消</el-button>
@@ -43,7 +64,7 @@
 </template>
 
 <script>
-import { add, edit } from '@/api/tbWapMall'
+import { add, edit } from '@/api/mall'
 export default {
   props: {
     isAdd: {
@@ -69,12 +90,15 @@ export default {
         isMl: ''
       },
       rules: {
-        omsCode: [
-          { required: true, message: 'please enter', trigger: 'blur' }
+        mallName: [
+          { required: true, message: '请输入商场名称', trigger: 'blur' }
         ],
-        mallCode: [
-          { required: true, message: 'please enter', trigger: 'blur' }
+        province: [
+          { required: true, message: '请输入省份', trigger: 'blur' }
         ],
+        city: [
+          { required: true, message: '请输入城市', trigger: 'blur' }
+        ]
       }
     }
   },

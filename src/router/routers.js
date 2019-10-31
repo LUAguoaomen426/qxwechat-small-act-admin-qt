@@ -60,15 +60,16 @@ export const constantRouterMap = [
     ]
   },
   {
-    path: '/act',
+    path: '/actMall',
     component: Layout,
+    hidden: true,
     redirect: 'noredirect',
     children: [
       {
         path: 'mall',
         component: () => import('@/views/act/mall/index'),
         name: '活动商场配置',
-        meta: { title: '活动商场配置', icon: 'index', noCache: true, affix: true }
+        meta: { title: '活动商场配置', icon: 'index', noCache: true }
       }
     ]
   },
@@ -90,6 +91,7 @@ export const constantRouterMap = [
 ]
 
 export default new Router({
+  base: '/admin/',
   mode: 'history',
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
