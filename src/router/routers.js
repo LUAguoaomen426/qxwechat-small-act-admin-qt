@@ -74,6 +74,20 @@ export const constantRouterMap = [
     ]
   },
   {
+    path: '/report',
+    component: Layout,
+    hidden: true,
+    redirect: 'noredirect',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/act/report/index'),
+        name: '数据报表',
+        meta: { title: '数据报表', icon: 'index', noCache: true }
+      }
+    ]
+  },
+  {
     path: '/user',
     component: Layout,
     hidden: true,

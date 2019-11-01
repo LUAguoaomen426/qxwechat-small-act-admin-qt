@@ -15,11 +15,16 @@ import store from './store'
 
 import '@/icons' // icon
 import './router/index' // permission control
+
+import VCharts from 'v-charts'
+
 // import Router from 'vue-router'
 
 Vue.use(mavonEditor)
 Vue.use(permission)
 Vue.use(ElementUI, { locale })
+Vue.use(VCharts)
+
 Vue.config.productionTip = false
 
 // const routerPush = Router.prototype.push

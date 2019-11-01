@@ -1,9 +1,8 @@
 {
-  "name": "eladmin",
+  "name": "admin",
   "version": "2.2.0",
   "license": "Apache-2.0",
-  "description": "eladmin 前端代码",
-  "author": "jie <elunez@qq.com>",
+  "description": "admin 前端代码",
   "scripts": {
     "dev": "cross-env BABEL_ENV=development webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "build": "cross-env NODE_ENV=production env_config=prod node build/build.js",
@@ -11,10 +10,6 @@
     "test": "npm run lint",
     "precommit": "lint-staged",
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/elunez/eladmin-qd"
   },
   "dependencies": {
     "@riophae/vue-treeselect": "0.0.38",
@@ -33,6 +28,7 @@
     "nprogress": "0.2.0",
     "path-to-regexp": "2.4.0",
     "screenfull": "3.3.3",
+    "v-charts": "^1.19.0",
     "vue": "2.5.17",
     "vue-count-to": "1.0.13",
     "vue-router": "3.1.3",

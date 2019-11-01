@@ -8,10 +8,17 @@ export function add(data) {
   })
 }
 
-export function del(id) {
+export function del(actCode) {
   return request({
-    url: 'api/actModule/' + id,
-    method: 'delete'
+    url: 'api/actInfo/delete?actCode=' + actCode,
+    method: 'post'
+  })
+}
+
+export function enable(actCode) {
+  return request({
+    url: 'api/actInfo/enable?actCode=' + actCode,
+    method: 'post'
   })
 }
 

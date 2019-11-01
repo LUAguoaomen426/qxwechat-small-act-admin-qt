@@ -22,7 +22,11 @@
     <el-table v-loading="loading" :data="data" size="medium" style="width: 100%;">
       <el-table-column
         type="index"/>
-      <el-table-column prop="moduleName" label="活动名称"/>
+      <el-table-column prop="moduleName" label="活动名称">
+        <template slot-scope="scope">
+          {{ scope.row.subType == 1 ? '[大促]' : '' }}{{ scope.row.moduleName }}
+        </template>
+      </el-table-column>
       <el-table-column prop="secondModuleName" label="英文名称"/>
       <el-table-column prop="hideTime" label="列表隐藏时间">
         <template slot-scope="scope">
@@ -64,28 +68,30 @@
             v-if="!scope.row.isDelete"
             type="text"
             size="small"
-            @click="subDelete(scope.row,scope.$index)">&nbsp;&nbsp;&nbsp;下架
+            @click="subDelete(scope.row,1)">&nbsp;&nbsp;&nbsp;下架
           </el-button>
           <el-button
             v-if="scope.row.isDelete"
             type="text"
             size="small"
-            @click="subDelete(scope.row,scope.$index)">上架
+            @click="subDelete(scope.row,0)">上架
           </el-button>
         </template>
       </el-table-column>
       <el-table-column label="顺序" align="center">
         <template slot-scope="scope">
-          <el-button v-permission="['ADMIN','ACT_ALL','ACT_LEVEL_CHANGE']" icon="el-icon-sort-down" type="text" title="下移" @click="changeLevel(scope.row,1)"/>
-          <el-button v-permission="['ADMIN','ACT_ALL','ACT_LEVEL_CHANGE']" icon="el-icon-sort-up" type="text" title="上移" @click="changeLevel(scope.row,0)"/>
+          <el-button v-permission="['ADMIN','ACT_ALL','ACT_LEVEL_CHANGE']" :disabled="scope.row.isDelete ? true : false" icon="el-icon-sort-down" type="text" title="下移" @click="changeLevel(scope.row,1)"/>
+          <el-button v-permission="['ADMIN','ACT_ALL','ACT_LEVEL_CHANGE']" :disabled="scope.row.isDelete ? true : false" icon="el-icon-sort-up" type="text" title="上移" @click="changeLevel(scope.row,0)"/>
         </template>
       </el-table-column>
       <el-table-column v-if="checkPermission(['ADMIN','ACT_ALL','ACT_UPDATE','TBWAPACTMODULE_DELETE'])" fixed="right" label="操作" width="150px" align="center">
         <template slot-scope="scope">
           <el-button v-permission="['ADMIN','ACT_ALL','ACT_UPDATE']" size="small" type="text" @click="edit(scope.row)">编辑</el-button>
-          <el-button v-permission="['ADMIN','ACT_ALL','TBWAPACTMODULE_EDIT']" size="small" type="text" @click="edit(scope.row)">数据报表</el-button>
           <router-link :to="{path:'/actMall/mall',query:{'actCode':scope.row.actCode}}">
             <el-button v-permission="['ADMIN','ACT_ALL','TBWAPACTMODULE_EDIT']" size="small" type="text">配置</el-button>
+          </router-link>
+          <router-link :to="{path:'/report/index',query:{'actCode':scope.row.actCode}}">
+            <el-button v-permission="['ADMIN','ACT_ALL','TBWAPACTMODULE_EDIT']" v-if="scope.row.subType == 1" size="small" type="text">数据报表</el-button>
           </router-link>
         </template>
       </el-table-column>
@@ -105,7 +111,7 @@
 <script>
 import checkPermission from '@/utils/permission'
 import initData from '@/mixins/initData'
-import { del, changeLevel } from '@/api/act'
+import { del, changeLevel, enable } from '@/api/act'
 import { parseTime } from '@/utils/index'
 import eForm from './form'
 import copy from '@/components/copy/copyToClipboard'
@@ -155,23 +161,35 @@ export default {
       if (value) { this.params['blurry'] = value }
       return true
     },
-    subDelete(id) {
+    subDelete(data, flag) {
       this.delLoading = true
-      del(id).then(res => {
-        this.delLoading = false
-        this.$refs[id].doClose()
-        this.dleChangePage()
-        this.init()
-        this.$notify({
-          title: '删除成功',
-          type: 'success',
-          duration: 2500
+      if (flag) {
+        del(data.actCode).then(res => {
+          this.delLoading = false
+          this.init()
+          this.$notify({
+            title: '下架成功',
+            type: 'success',
+            duration: 2500
+          })
+        }).catch(err => {
+          this.delLoading = false
+          console.log(err.message)
         })
-      }).catch(err => {
-        this.delLoading = false
-        this.$refs[id].doClose()
-        console.log(err.response.data.message)
-      })
+      } else {
+        enable(data.actCode).then(res => {
+          this.delLoading = false
+          this.init()
+          this.$notify({
+            title: '上架成功',
+            type: 'success',
+            duration: 2500
+          })
+        }).catch(err => {
+          this.delLoading = false
+          console.log(err.message)
+        })
+      }
     },
     add() {
       this.isAdd = true
