@@ -46,7 +46,8 @@ import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import Screenfull from '@/components/Screenfull'
-import Avatar from '@/assets/avatar/avatar.png'
+import Avatar from '@/assets/avatar/avatar.gif'
+
 export default {
   components: {
     Breadcrumb,

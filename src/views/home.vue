@@ -1,6 +1,12 @@
 <template>
   <div class="dashboard-container">
-    <!--<div class="dashboard-editor-container">
+    <el-alert
+      :closable="false"
+      :title="'你好，' + user.username"
+      description="欢迎访问大促活动管理系统"
+      type="success"
+      style="height: 80px;float: right"/>
+      <!--<div class="dashboard-editor-container">
       <panel-group/>
 
       <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
@@ -47,7 +53,8 @@ export default {
   components: {},
   computed: {
     ...mapGetters([
-      'roles'
+      'roles',
+      'user'
     ])
   }
 }

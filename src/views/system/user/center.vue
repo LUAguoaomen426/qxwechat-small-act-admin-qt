@@ -85,7 +85,7 @@ import { getToken } from '@/utils/auth'
 import store from '@/store'
 import { parseTime } from '@/utils/index'
 import initData from '@/mixins/initData'
-import Avatar from '@/assets/avatar/avatar.png'
+import Avatar from '@/assets/avatar/avatar.gif'
 export default {
   name: 'Center',
   components: { updatePass, updateEmail },
