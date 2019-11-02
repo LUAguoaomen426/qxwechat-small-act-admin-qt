@@ -67,3 +67,26 @@ export function deleteSpecLink(actCode, data) {
     data
   })
 }
+
+export function openDrawEdit(actCode,drawId) {
+  return request({
+    url: 'api/' + actCode + '/draw/'+drawId,
+    method: 'get'
+  })
+}
+
+export function drawAdd(actCode,data) {
+  return request({
+    url: 'api/' + actCode + '/draw/add', 
+    method: 'post',
+    data
+  })
+}
+
+export function drawSave(actCode,data) {
+  return request({
+    url: 'api/' + actCode + '/draw/save',
+    method: 'post',
+    data
+  })
+}
