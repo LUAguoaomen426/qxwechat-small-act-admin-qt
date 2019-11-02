@@ -90,3 +90,10 @@ export function drawSave(actCode,data) {
     data
   })
 }
+
+export function deleteDraw(actCode,drawId) {
+  return request({
+    url: 'api/' + actCode + '/draw/'+drawId,
+    method: 'delete'
+  })
+}

@@ -403,7 +403,7 @@
           <el-col :span="8" :offset="4">
             <span>开始日期：</span>
             <el-date-picker
-              v-model="drawData.drawStartTime"
+              v-model="drawData.viewDrawStartTime"
               type="date"
               placeholder="选择日期"
               style="width: 250px"
@@ -413,7 +413,7 @@
           <el-col :span="8">
             <span>结束日期：</span>
             <el-date-picker
-              v-model="drawData.drawEndTime"
+              v-model="drawData.viewDrawEndTime"
               type="date"
               placeholder="选择日期"
               style="width: 250px"
@@ -491,6 +491,7 @@
 
 <script>
 import checkPermission from "@/utils/permission";
+import { dateFormat } from "@/utils/formatDate";
 import initData from "@/mixins/initData";
 import { parseTime } from "@/utils/index";
 import eForm from "../form";
@@ -505,7 +506,8 @@ import {
   deleteSpecLink,
   openDrawEdit,
   drawAdd,
-  drawSave
+  drawSave,
+  deleteDraw
 } from "@/api/actMall";
 import copy from "@/components/copy/copyToClipboard";
 import { getToken } from "@/utils/auth";
@@ -556,7 +558,8 @@ export default {
       mallSearch: "",
       myHeaders: { Authorization: "Bearer " + getToken() },
       actCode: "",
-      drawDataStatus: 0
+      drawDataStatus: 0,
+      drawDataEditTemp: {}
     };
   },
   created() {
@@ -727,20 +730,28 @@ export default {
     // 新增抽奖信息
     newDrawData() {
       this.drawDialogShowFlag = true;
+      this.drawDataStatus = 0;
+      this.active = 0;
+      this.drawData = {
+        drawEndTime: null,
+        drawStartTime: null,
+        viewDrawEndTime: null,
+        viewDrawStartTime: null,
+        id: null,
+        prizeCode: [],
+        prizeCount: 0,
+        tableDraw: {}
+      };
+      this.tableTitle = [];
     },
     // 删除抽奖信息
     deleteDraw(drawId) {
       this.$confirm("确认删除抽奖信息？")
         .then(_ => {
-          axios
-            .get("/admin/" + this.actCode + "/draw/delete", {
-              params: {
-                drawID: drawId
-              }
-            })
+          deleteDraw(this.$route.query.actCode, drawId)
             .then(res => {
-              this.$message(res.data.message);
-              this.getDrawData();
+              this.$message(res.message);
+              this.handleSelect("3", 1);
             })
             .catch();
         })
@@ -899,13 +910,24 @@ export default {
       // this.linkLoading = true
     },
     //抽奖配置修改触发事件
-    drawInfoChange(value, t) {
+    drawInfoChange(date, t) {
+      console.log(date, t);
+      let value = null;
+      if (t) {
+        value = dateFormat(date, "yyyy-MM-dd");
+      }
       if (this.drawDataStatus == 0) {
+        console.log("new");
+        //当前为新建抽奖，不用限制时间设置
+        if (t == "s") {
+          this.drawData.drawStartTime = value + " 00:00:00";
+        }
         if (t == "e") {
           this.drawData.drawEndTime = value + " 23:59:59";
         }
         return;
       }
+      console.log("edit");
       if (t == "e") {
         var oldEndTime = new Date(this.drawDataEditTemp.drawEndTime);
         var newEndTime = new Date(value + " 23:59:59");
@@ -916,6 +938,7 @@ export default {
           this.drawData.drawEndTime = value + " 23:59:59";
         } else {
           this.drawData.drawEndTime = this.drawDataEditTemp.drawEndTime;
+          this.drawData.viewDrawEndTime = new Date(this.drawData.drawEndTime)
           this.$message("结束时间不能缩减");
         }
       }
@@ -929,6 +952,7 @@ export default {
           this.drawData.drawStartTime = value + " 00:00:00";
         } else {
           this.drawData.drawStartTime = this.drawDataEditTemp.drawStartTime;
+          this.drawData.viewDrawStartTime = new Date(this.drawData.drawStartTime)
           this.$message("开始时间不能缩减");
         }
       }
@@ -947,6 +971,12 @@ export default {
       openDrawEdit(this.$route.query.actCode, drawId)
         .then(res => {
           // console.log("res ",res);
+          res.dataMap.drawvo.viewDrawStartTime = new Date(
+            res.dataMap.drawvo.drawStartTime
+          );
+          res.dataMap.drawvo.viewDrawEndTime = new Date(
+            res.dataMap.drawvo.drawEndTime
+          );
           this.drawData = res.dataMap.drawvo;
           this.tableTitle = [];
           for (var j = 1; j <= this.drawData.prizeCount; j++) {
@@ -1009,26 +1039,53 @@ export default {
       if (this.drawDataStatus == 0) {
         drawAdd(this.$route.query.actCode, this.drawData)
           .then(res => {
-            this.drawData = {};
-            this.drawDialogShowFlag = false;
             this.$message(res.message);
-            this.getDrawData();
+            this.handleSelect("3", 1);
           })
           .catch();
       } else {
         drawSave(this.$route.query.actCode, this.drawData)
           .then(res => {
-            this.drawData = {};
-            this.drawDialogShowFlag = false;
             this.$message(res.message);
-            this.getDrawData();
+            this.handleSelect("3", 1);
           })
           .catch();
       }
-      this.getDrawData();
+      this.drawData = {};
+      this.drawDialogShowFlag = false;
     },
     backStep() {
       this.active -= 1;
+    },
+    buildNewMatrix() {
+      this.tableTitle = [];
+      this.drawData.tableDraw = [];
+      for (var j = 1; j <= this.drawData.prizeCount; j++) {
+        this.tableTitle.push({ label: "奖品" + j, prop: "" + j, fixed: false });
+      }
+      var endTime = new Date(this.drawData.drawEndTime.replace(/-/g, "/"));
+      // endTime.setDate(endTime.getDate() + 1)
+      var day = Math.floor(
+        (endTime.getTime() -
+          new Date(this.drawData.drawStartTime.replace(/-/g, "/"))) /
+          (24 * 60 * 60 * 1000) +
+          1
+      );
+      console.log("day", day);
+      for (var i = 0; i < day; i++) {
+        var time = new Date(this.drawData.drawStartTime);
+        time.setDate(time.getDate() + i);
+        var d = {
+          date: time
+            .toLocaleDateString()
+            .split("/")
+            .join("-")
+        };
+        for (var j = 1; j <= this.drawData.prizeCount; j++) {
+          d[j] = { prizeCount: 0, prizeProbability: 0 };
+        }
+        this.drawData.tableDraw.push(d);
+      }
     }
   }
 };
