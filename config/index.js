@@ -64,11 +64,11 @@ module.exports = {
 
   build: {
     // Template for index.html
-    index: path.resolve(__dirname, '../act_admin/index.html'),
+    index: path.resolve(__dirname, '../admin/index.html'),
 
     // Paths
-    assetsRoot: path.resolve(__dirname, '../act_admin'),
-    assetsSubDirectory: 'act_admin',
+    assetsRoot: path.resolve(__dirname, '../admin'),
+    assetsSubDirectory: '',
 
     /**
      * You can set by youself according to actual condition
