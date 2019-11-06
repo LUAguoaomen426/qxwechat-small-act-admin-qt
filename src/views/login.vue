@@ -143,7 +143,7 @@ export default {
     justify-content: center;
     align-items: center;
     height: 100%;
-    background-image:url(	https://docs-1255840532.cos.ap-shanghai.myqcloud.com/3968.jpg );
+    background-image:url(	https://img1.mklimg.com/g4/M00/59/1F/rBBrel27_E-AaJLNABCi60XYx6I467.jpg);
     background-size: cover;
   }
   .title {

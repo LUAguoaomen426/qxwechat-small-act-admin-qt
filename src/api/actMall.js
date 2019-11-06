@@ -68,22 +68,22 @@ export function deleteSpecLink(actCode, data) {
   })
 }
 
-export function openDrawEdit(actCode,drawId) {
+export function openDrawEdit(actCode, drawId) {
   return request({
-    url: 'api/' + actCode + '/draw/'+drawId,
+    url: 'api/' + actCode + '/draw/' + drawId,
     method: 'get'
   })
 }
 
-export function drawAdd(actCode,data) {
+export function drawAdd(actCode, data) {
   return request({
-    url: 'api/' + actCode + '/draw/add', 
+    url: 'api/' + actCode + '/draw/add',
     method: 'post',
     data
   })
 }
 
-export function drawSave(actCode,data) {
+export function drawSave(actCode, data) {
   return request({
     url: 'api/' + actCode + '/draw/save',
     method: 'post',
@@ -91,9 +91,9 @@ export function drawSave(actCode,data) {
   })
 }
 
-export function deleteDraw(actCode,drawId) {
+export function deleteDraw(actCode, drawId) {
   return request({
-    url: 'api/' + actCode + '/draw/'+drawId,
+    url: 'api/' + actCode + '/draw/' + drawId,
     method: 'delete'
   })
 }
