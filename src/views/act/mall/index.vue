@@ -331,7 +331,7 @@
             <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
         </el-form-item>
-        <el-collapse accordion>
+        <el-collapse v-if="newChangeAd.type ==0" accordion>
           <el-collapse-item>
             <template slot="title">
               广告位-商场配置
