@@ -7,9 +7,9 @@
         mode="horizontal"
         @select="handleSelect"
       >
-        <el-menu-item index="1">商场</el-menu-item>
-        <el-menu-item index="2">广告位</el-menu-item>
-        <el-menu-item index="3">抽奖信息</el-menu-item>
+        <el-menu-item v-permission="['ADMIN','ACT_SETTING','ACT_MALL_ALL']" index="1">商场</el-menu-item>
+        <el-menu-item v-permission="['ADMIN','ACT_SETTING','ACT_SPEC_ALL']" index="2">广告位</el-menu-item>
+        <el-menu-item v-permission="['ADMIN','ACT_SETTING','ACT_DRAW_ALL']" index="3">抽奖信息</el-menu-item>
       </el-menu>
       <div v-if="innerShow==1" style="display: inline-block;margin: 20px 2px;">
         <el-input
@@ -21,7 +21,7 @@
           class="filter-item"
         />
         <el-button
-          v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']"
+          v-permission="['ADMIN','ACT_MALL_ALL','ACT_MALL_SELECT_ACT']"
           class="filter-item"
           icon="el-icon-search"
           size="mini"
@@ -29,7 +29,7 @@
           @click="search"
         >搜索</el-button>
         <el-upload
-          v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']"
+          v-permission="['ADMIN','ACT_MALL_ALL','ACT_MALL_EXCEL_SYNC']"
           :limit="1"
           :show-file-list="false"
           :action="'/api/' + this.$route.query.actCode + '/mallInfo/upload'"
@@ -44,7 +44,7 @@
         <!--<el-button  class="filter-item" size="mini" type="primary" icon="el-icon-upload" @click="updataE">上传-->
         <!--</el-button>-->
         <el-button
-          v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']"
+          v-permission="['ADMIN','ACT_MALL_ALL','ACT_MALL_SAVE_ACT']"
           class="filter-item"
           size="mini"
           type="primary"
@@ -54,7 +54,7 @@
       </div>
       <div v-if="innerShow==2" style="display: inline-block;margin: 20px 2px;">
         <el-button
-          v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']"
+          v-permission="['ADMIN','ACT_SPEC_ALL','ACT_SPEC_ADD']"
           class="filter-item"
           size="mini"
           type="primary"
@@ -64,7 +64,7 @@
       </div>
       <div v-if="innerShow==3" style="display: inline-block;margin: 20px 2px;">
         <el-button
-          v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']"
+          v-permission="['ADMIN','ACT_DRAW_ALL','ACT_DRAW_INFO_SAVE']"
           class="filter-item"
           size="mini"
           type="primary"
@@ -93,7 +93,7 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
-            v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_EDIT']"
+            v-permission="['ADMIN','ACT_MALL_ALL','ACT_MALL_REFRESH_ACT']"
             size="small"
             type="text"
             @click="refresh(scope.row)"
@@ -123,19 +123,19 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
-            v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_EDIT']"
+            v-permission="['ADMIN','ACT_SPEC_ALL','ACT_SPEC_UPDATE']"
             size="small"
             type="text"
             @click="changeAd(scope.row)"
           >修改</el-button>
           <el-button
-            v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_EDIT']"
+            v-permission="['ADMIN','ACT_SPEC_ALL','ACT_SPEC_DELETE']"
             size="small"
             type="text"
             @click="deleteAd(scope.row)"
           >删除</el-button>
           <el-upload
-            v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']"
+            v-permission="['ADMIN','ACT_SPEC_ALL','ACT_SPEC_UPLOAD']"
             :limit="1"
             :show-file-list="false"
             :headers="myHeaders"
@@ -168,13 +168,13 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
-            v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_EDIT']"
+            v-permission="['ADMIN','ACT_DRAW_ALL','ACT_DRAW_INFO_UPDATE']"
             size="small"
             type="text"
             @click="openDrawEditTable(scope.row.drawId)"
           >修改</el-button>
           <el-button
-            v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_EDIT']"
+            v-permission="['ADMIN','ACT_DRAW_ALL','ACT_DRAW_INFO_DELETE']"
             size="small"
             type="text"
             @click="deleteDraw(scope.row.drawId)"
