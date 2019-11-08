@@ -331,6 +331,13 @@
             <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
         </el-form-item>
+        <el-row v-if="newChangeAd.type ==1">
+          <el-form-item label="绑定活动">
+            <el-select v-model="newChangeAd.bindActCode" placeholder="请选择" style="width: 200px">
+              <el-option v-for="act in actList" :key="act.moduleName" :label="act.moduleName" :value="act.actCode" />
+            </el-select>
+          </el-form-item>
+        </el-row>
         <el-collapse v-if="newChangeAd.type ==0" accordion>
           <el-collapse-item>
             <template slot="title">
@@ -505,7 +512,8 @@ import {
   openDrawEdit,
   drawAdd,
   drawSave,
-  deleteDraw
+  deleteDraw,
+  getActList
 } from '@/api/actMall'
 import copy from '@/components/copy/copyToClipboard'
 import { getToken } from '@/utils/auth'
@@ -535,6 +543,7 @@ export default {
         time: []
       },
       shoppingListShow: false,
+      actList: [],
       newChangeAd: {
         name: '',
         specCode: '',
@@ -544,7 +553,8 @@ export default {
         haveTL: null,
         time: [],
         mallList: [],
-        fileList: []
+        fileList: [],
+        bindActCode: ''
       },
       luckDraw: [],
       drawData: {},
@@ -590,6 +600,14 @@ export default {
             console.log(err.response.data.message)
           })
       } else if (key === '2') {
+        getActList(9999)
+          .then(res => {
+            console.log('活动列表数据', res)
+            this.actList = res.content
+          })
+          .catch(err => {
+            console.log(err.response.data.message)
+          })
         // 广告位
         getLinkData(actCode)
           .then(res => {
