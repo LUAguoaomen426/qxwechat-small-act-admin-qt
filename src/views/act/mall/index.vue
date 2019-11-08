@@ -146,7 +146,7 @@
             class="filter-item"
             style="margin-bottom:auto;"
           >
-            <el-button size="mini" type="text" @click="adUpload(scope.row)">上传</el-button>
+            <el-button v-if="scope.row.type==0" size="mini" type="text" @click="adUpload(scope.row)">上传</el-button>
           </el-upload>
         </template>
       </el-table-column>
@@ -251,6 +251,13 @@
             <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
         </el-form-item>
+        <el-row v-if="addAdForm.type ==1">
+          <el-form-item label="绑定活动">
+            <el-select v-model="addAdForm.bindActCode" placeholder="请选择" style="width: 200px">
+              <el-option v-for="act in actList" :key="act.moduleName" :label="act.moduleName" :value="act.actCode" />
+            </el-select>
+          </el-form-item>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="text" @click="cancelAddAd">取消</el-button>
