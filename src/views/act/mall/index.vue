@@ -422,7 +422,7 @@
 
         <el-row class="row-bg prize-border">
           <el-col v-for=" (n,i) in drawData.prizeCount " :key="n" :span="10" class="parizeCode">
-            <span :class="'prize-count'+ i%2">奖品 {{ n }} 劵ID：</span>
+            <span :class="'prize-count'+ i%2">奖品 {{ n }} 劵标识：</span>
             <el-input
               v-model="drawData.prizeCode[n - 1 ]"
               :class="'prize-count'+ i%2"
