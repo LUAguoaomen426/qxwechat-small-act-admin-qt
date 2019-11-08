@@ -7,9 +7,9 @@
         mode="horizontal"
         @select="handleSelect"
       >
-        <el-menu-item index="1">商场</el-menu-item>
-        <el-menu-item index="2">广告位</el-menu-item>
-        <el-menu-item index="3">抽奖信息</el-menu-item>
+        <el-menu-item v-permission="['ADMIN','ACT_SETTING','ACT_MALL_ALL']" index="1">商场</el-menu-item>
+        <el-menu-item v-permission="['ADMIN','ACT_SETTING','ACT_SPEC_ALL']" index="2">广告位</el-menu-item>
+        <el-menu-item v-permission="['ADMIN','ACT_SETTING','ACT_DRAW_ALL']" index="3">抽奖信息</el-menu-item>
       </el-menu>
       <div v-if="innerShow==1" style="display: inline-block;margin: 20px 2px;">
         <el-input
@@ -21,7 +21,7 @@
           class="filter-item"
         />
         <el-button
-          v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']"
+          v-permission="['ADMIN','ACT_MALL_ALL','ACT_MALL_SELECT_ACT']"
           class="filter-item"
           icon="el-icon-search"
           size="mini"
@@ -29,7 +29,7 @@
           @click="search"
         >搜索</el-button>
         <el-upload
-          v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']"
+          v-permission="['ADMIN','ACT_MALL_ALL','ACT_MALL_EXCEL_SYNC']"
           :limit="1"
           :show-file-list="false"
           :action="'/api/' + this.$route.query.actCode + '/mallInfo/upload'"
@@ -44,7 +44,7 @@
         <!--<el-button  class="filter-item" size="mini" type="primary" icon="el-icon-upload" @click="updataE">上传-->
         <!--</el-button>-->
         <el-button
-          v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']"
+          v-permission="['ADMIN','ACT_MALL_ALL','ACT_MALL_SAVE_ACT']"
           class="filter-item"
           size="mini"
           type="primary"
@@ -54,7 +54,7 @@
       </div>
       <div v-if="innerShow==2" style="display: inline-block;margin: 20px 2px;">
         <el-button
-          v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']"
+          v-permission="['ADMIN','ACT_SPEC_ALL','ACT_SPEC_ADD']"
           class="filter-item"
           size="mini"
           type="primary"
@@ -64,7 +64,7 @@
       </div>
       <div v-if="innerShow==3" style="display: inline-block;margin: 20px 2px;">
         <el-button
-          v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']"
+          v-permission="['ADMIN','ACT_DRAW_ALL','ACT_DRAW_INFO_SAVE']"
           class="filter-item"
           size="mini"
           type="primary"
@@ -93,7 +93,7 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
-            v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_EDIT']"
+            v-permission="['ADMIN','ACT_MALL_ALL','ACT_MALL_REFRESH_ACT']"
             size="small"
             type="text"
             @click="refresh(scope.row)"
@@ -123,19 +123,19 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
-            v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_EDIT']"
+            v-permission="['ADMIN','ACT_SPEC_ALL','ACT_SPEC_UPDATE']"
             size="small"
             type="text"
             @click="changeAd(scope.row)"
           >修改</el-button>
           <el-button
-            v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_EDIT']"
+            v-permission="['ADMIN','ACT_SPEC_ALL','ACT_SPEC_DELETE']"
             size="small"
             type="text"
             @click="deleteAd(scope.row)"
           >删除</el-button>
           <el-upload
-            v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_CREATE']"
+            v-permission="['ADMIN','ACT_SPEC_ALL','ACT_SPEC_UPLOAD']"
             :limit="1"
             :show-file-list="false"
             :headers="myHeaders"
@@ -168,13 +168,13 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
-            v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_EDIT']"
+            v-permission="['ADMIN','ACT_DRAW_ALL','ACT_DRAW_INFO_UPDATE']"
             size="small"
             type="text"
             @click="openDrawEditTable(scope.row.drawId)"
           >修改</el-button>
           <el-button
-            v-permission="['ADMIN','TBWAPACTMODULE_ALL','TBWAPACTMODULE_EDIT']"
+            v-permission="['ADMIN','ACT_DRAW_ALL','ACT_DRAW_INFO_DELETE']"
             size="small"
             type="text"
             @click="deleteDraw(scope.row.drawId)"
@@ -331,7 +331,14 @@
             <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
         </el-form-item>
-        <el-collapse accordion>
+        <el-row v-if="newChangeAd.type ==1">
+          <el-form-item label="绑定活动">
+            <el-select v-model="newChangeAd.bindActCode" placeholder="请选择" style="width: 200px">
+              <el-option v-for="act in actList" :key="act.moduleName" :label="act.moduleName" :value="act.actCode" />
+            </el-select>
+          </el-form-item>
+        </el-row>
+        <el-collapse v-if="newChangeAd.type ==0" accordion>
           <el-collapse-item>
             <template slot="title">
               广告位-商场配置
@@ -505,7 +512,8 @@ import {
   openDrawEdit,
   drawAdd,
   drawSave,
-  deleteDraw
+  deleteDraw,
+  getActList
 } from '@/api/actMall'
 import copy from '@/components/copy/copyToClipboard'
 import { getToken } from '@/utils/auth'
@@ -535,6 +543,7 @@ export default {
         time: []
       },
       shoppingListShow: false,
+      actList: [],
       newChangeAd: {
         name: '',
         specCode: '',
@@ -544,7 +553,8 @@ export default {
         haveTL: null,
         time: [],
         mallList: [],
-        fileList: []
+        fileList: [],
+        bindActCode: ''
       },
       luckDraw: [],
       drawData: {},
@@ -590,6 +600,14 @@ export default {
             console.log(err.response.data.message)
           })
       } else if (key === '2') {
+        getActList(9999)
+          .then(res => {
+            console.log('活动列表数据', res)
+            this.actList = res.content
+          })
+          .catch(err => {
+            console.log(err.response.data.message)
+          })
         // 广告位
         getLinkData(actCode)
           .then(res => {

@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="head-container">
       <el-tabs v-model="subMenu" @tab-click="handleClick">
-        <el-tab-pane v-loading="pvuvLoading" label="PV/UV" name="pvuv">
+        <el-tab-pane v-loading="pvuvLoading" v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_PVUV'])" label="PV/UV" name="pvuv">
           <div class="from">
             <el-form
               :inline="true"
@@ -40,7 +40,7 @@
             <el-table-column prop="uv" label="UV"/>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane v-loading="numberLoading" label="参团人数" name="first">
+        <el-tab-pane v-loading="numberLoading" v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_GROUP_LIST'])" label="参团人数" name="first">
           <el-form label-width="160px">
             <el-row style="padding-top:50px;margin:10px;left: -80px;">
               <el-col :span="5" :offset="1">
@@ -85,7 +85,7 @@
               </el-col>
               <el-col :span="6">
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-d-arrow-right" @click="changePeopleNum">
+                  <el-button v-permission="['ADMIN','REPORT_ALL','REPORT_ACT_GROUP_ADD']" type="primary" icon="el-icon-d-arrow-right" @click="changePeopleNum">
                     GO
                   </el-button>
                 </el-form-item>
@@ -93,13 +93,13 @@
             </el-row>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane v-loading="groupLoading" label="团打卡数据" name="clockCard">
+        <el-tab-pane v-loading="groupLoading" v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_CARD_LIST'])" label="团打卡数据" name="clockCard">
           <el-table :data="clockCardTableData" class="tab_box">
             <el-table-column prop="groupName" label="团名称"/>
             <el-table-column prop="count" label="打卡人数"/>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane v-loading="ticketLoading" label="单品券人数" name="second">
+        <el-tab-pane v-loading="ticketLoading" v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_TICKET_ADD'])" label="单品券人数" name="second">
           <el-form label-width="160px">
             <el-row style="padding: 40px;">
               请输入区间：
@@ -125,14 +125,14 @@
                 </div>
               </div>
               <div id="ticketSubmit" style="margin-top: 10px">
-                <el-button type="primary" icon="el-icon-d-arrow-right" @click="addTicket">
+                <el-button v-permission="['ADMIN','REPORT_ALL','REPORT_ACT_TICKET_ADD']" v-loading="ticketLoading" type="primary" icon="el-icon-d-arrow-right" @click="addTicket">
                   GO
                 </el-button>
               </div>
             </el-row>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane v-loading="flopLoading" label="翻牌记录" name="flopRecord">
+        <el-tab-pane v-loading="flopLoading" v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_DRAW_ANALYSIS_FLOP'])" label="翻牌记录" name="flopRecord">
           <div class="from">
             <el-form
               :inline="true"
@@ -149,7 +149,7 @@
                   size="mini"/>
               </el-form-item>
               <el-form-item>
-                <el-button type="success" size="mini" icon="el-icon-search" @click="onSubmit">查询</el-button>
+                <el-button v-permission="['ADMIN','REPORT_ALL','REPORT_DRAW_ANALYSIS_FLOP']" type="success" size="mini" icon="el-icon-search" @click="onSubmit">查询</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -168,7 +168,7 @@
             <el-table-column prop="luckyNum" label="中奖人次"/>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane v-loading="luckyLoading" label="中奖记录" name="winningRecord">
+        <el-tab-pane v-loading="luckyLoading" v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_DRAW_ANALYSIS_LUCKY'])" label="中奖记录" name="winningRecord">
           <div class="froms">
             <el-form
               ref="form"
@@ -224,7 +224,7 @@
                   end-placeholder="结束时间"/>
               </el-form-item>
               <el-form-item>
-                <el-button type="success" size="mini" icon="el-icon-search" @click="setSubmit">查询</el-button>
+                <el-button v-permission="['ADMIN','REPORT_ALL','REPORT_DRAW_ANALYSIS_LUCKY']" type="success" size="mini" icon="el-icon-search" @click="setSubmit">查询</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -255,6 +255,7 @@
 </template>
 
 <script>
+import checkPermission from '@/utils/permission'
 import { analysisPVUVData, number, analysisFlopData, groupCount, analysisLuckyData, addGroupNumber, addTicketNumber } from '@/api/report'
 import countTo from 'vue-count-to'
 
@@ -337,18 +338,7 @@ export default {
     }
   },
   created() {
-    number(this.$route.query.actCode).then(res => {
-      console.log('number', res)
-      this.groupNumberStart = res.dataMap.groupNumber - 200
-      this.groupNumberEnd = res.dataMap.groupNumber
-      this.extraNumberStart = 0
-      this.extraNumberEnd = res.dataMap.extraNumber
-      this.totalNumberStart = res.dataMap.groupNumber - 200
-      this.totalNumberEnd = res.dataMap.totalNumber
-      // this.chartPVUVData.rows = []
-    }).catch(err => {
-      console.log(err.response.data.message)
-    })
+
   },
   mounted: function() {
     var now = new Date()
@@ -362,6 +352,7 @@ export default {
     // this.getRecord()
   },
   methods: {
+    checkPermission,
     onPVUVSubmit() {
       this.getPVUVRecord(false)
     },
@@ -478,6 +469,18 @@ export default {
       } else if (tab.name === 'winningRecord') {
         this.getCore()
       } else if (tab.name === 'clockCard') {
+        number(this.$route.query.actCode).then(res => {
+          console.log('number', res)
+          this.groupNumberStart = res.dataMap.groupNumber - 200
+          this.groupNumberEnd = res.dataMap.groupNumber
+          this.extraNumberStart = 0
+          this.extraNumberEnd = res.dataMap.extraNumber
+          this.totalNumberStart = res.dataMap.groupNumber - 200
+          this.totalNumberEnd = res.dataMap.totalNumber
+          // this.chartPVUVData.rows = []
+        }).catch(err => {
+          console.log(err.response.data.message)
+        })
         this.getClockCardData()
       }
     },

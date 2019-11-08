@@ -3,8 +3,8 @@
     <!--工具栏-->
     <div class="head-container">
       <!-- 搜索 -->
-      <el-input v-model="query.value" clearable placeholder="输入活动名称或者英文名称搜索" style="width: 300px;" class="filter-item" @keyup.enter.native="toQuery"/>
-      <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="toQuery">搜索</el-button>
+      <el-input v-permission="['ADMIN','ACT_ALL','ACT_LIST']" v-model="query.value" clearable placeholder="输入活动名称或者英文名称搜索" style="width: 300px;" class="filter-item" @keyup.enter.native="toQuery"/>
+      <el-button v-permission="['ADMIN','ACT_ALL','ACT_LIST']" class="filter-item" size="mini" type="success" icon="el-icon-search" @click="toQuery">搜索</el-button>
       <!-- 新增 -->
       <div style="display: inline-block;margin: 0px 2px;">
         <el-button
@@ -53,24 +53,15 @@
         <template slot-scope="scope">
           <el-tag v-if="scope.row.isDelete" type="info" size="small">已下架</el-tag>
           <el-tag v-if="!scope.row.isDelete" type="success" size="small">上架中</el-tag><br>
-          <el-popover
-            v-permission="['ADMIN','ACT_ALL','TBWAPACTMODULE_DELETE']"
-            :ref="scope.row.id"
-            placement="top"
-            width="180">
-            <p>确定下架该活动吗？</p>
-            <div style="text-align: right; margin: 0">
-              <el-button size="mini" type="text" @click="$refs[scope.row.id].doClose()">取消</el-button>
-              <el-button :loading="delLoading" type="primary" size="mini" @click="subDelete(scope.row.id)">确定</el-button>
-            </div>
-          </el-popover>
           <el-button
+            v-permission="['ADMIN','ACT_ALL','ACT_PULL_OFF']"
             v-if="!scope.row.isDelete"
             type="text"
             size="small"
             @click="subDelete(scope.row,1)">&nbsp;&nbsp;&nbsp;下架
           </el-button>
           <el-button
+            v-permission="['ADMIN','ACT_ALL','ACT_PULL_ON']"
             v-if="scope.row.isDelete"
             type="text"
             size="small"
@@ -78,20 +69,20 @@
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column label="顺序" align="center">
+      <el-table-column v-if="checkPermission(['ADMIN','ACT_ALL','ACT_LEVEL_CHANGE'])" label="顺序" align="center">
         <template slot-scope="scope">
           <el-button v-permission="['ADMIN','ACT_ALL','ACT_LEVEL_CHANGE']" :disabled="scope.row.isDelete ? true : false" icon="el-icon-sort-down" type="text" title="下移" @click="changeLevel(scope.row,1)"/>
           <el-button v-permission="['ADMIN','ACT_ALL','ACT_LEVEL_CHANGE']" :disabled="scope.row.isDelete ? true : false" icon="el-icon-sort-up" type="text" title="上移" @click="changeLevel(scope.row,0)"/>
         </template>
       </el-table-column>
-      <el-table-column v-if="checkPermission(['ADMIN','ACT_ALL','ACT_UPDATE','TBWAPACTMODULE_DELETE'])" fixed="right" label="操作" width="150px" align="center">
+      <el-table-column v-if="checkPermission(['ADMIN','ACT_ALL','ACT_UPDATE','ACT_SETTING','REPORT_ALL','ACT_MALL_ALL','ACT_SPEC_ALL','ACT_DRAW_ALL','REPORT_ACT_PVUV','REPORT_ACT_GROUP_LIST','REPORT_ACT_GROUP_ADD','REPORT_ACT_TICKET_ADD','REPORT_DRAW_ANALYSIS_FLOP','REPORT_DRAW_ANALYSIS_LUCKY','REPORT_ACT_CARD_LIST'])" fixed="right" label="操作" width="150px" align="center">
         <template slot-scope="scope">
           <el-button v-permission="['ADMIN','ACT_ALL','ACT_UPDATE']" size="small" type="text" @click="edit(scope.row)">编辑</el-button>
           <router-link :to="{path:'/actMall/mall',query:{'actCode':scope.row.actCode}}">
-            <el-button v-permission="['ADMIN','ACT_ALL','TBWAPACTMODULE_EDIT']" size="small" type="text">配置</el-button>
+            <el-button v-permission="['ADMIN','ACT_ALL','ACT_SETTING','ACT_MALL_ALL','ACT_SPEC_ALL','ACT_DRAW_ALL']" size="small" type="text">配置</el-button>
           </router-link>
           <router-link :to="{path:'/report/index',query:{'actCode':scope.row.actCode}}">
-            <el-button v-permission="['ADMIN','ACT_ALL','TBWAPACTMODULE_EDIT']" v-if="scope.row.subType == 1" size="small" type="text">数据报表</el-button>
+            <el-button v-permission="['ADMIN','ACT_ALL','REPORT_ALL','REPORT_ACT_PVUV','REPORT_ACT_GROUP_LIST','REPORT_ACT_GROUP_ADD','REPORT_ACT_TICKET_ADD','REPORT_DRAW_ANALYSIS_FLOP','REPORT_DRAW_ANALYSIS_LUCKY','REPORT_ACT_CARD_LIST']" v-if="scope.row.subType == 1" size="small" type="text">数据报表</el-button>
           </router-link>
         </template>
       </el-table-column>

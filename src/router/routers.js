@@ -106,7 +106,6 @@ export const constantRouterMap = [
 
 export default new Router({
   base: '/admin/',
-  mode: 'history',
-  scrollBehavior: () => ({ y: 0 }),
+  mode: 'hash',
   routes: constantRouterMap
 })

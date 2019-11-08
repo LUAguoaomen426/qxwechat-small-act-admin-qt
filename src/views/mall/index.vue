@@ -3,10 +3,11 @@
     <!--工具栏-->
     <div class="head-container">
       <!-- 搜索 -->
-      <el-input v-model="query.value" clearable placeholder="输入商场编号或名称搜索" style="width: 300px;" class="filter-item" @keyup.enter.native="toQuery"/>
-      <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="toQuery">搜索</el-button>
+      <el-input v-permission="['ADMIN','MALL_ALL','MALL_LIST']" v-model="query.value" clearable placeholder="输入商场编号或名称搜索" style="width: 300px;" class="filter-item" @keyup.enter.native="toQuery"/>
+      <el-button v-permission="['ADMIN','MALL_ALL','MALL_LIST']" class="filter-item" size="mini" type="success" icon="el-icon-search" @click="toQuery">搜索</el-button>
       <!-- 同步 -->
       <el-button
+        v-permission="['ADMIN','MALL_ALL','MALL_SYNC']"
         class="filter-item"
         size="mini"
         type="primary"
@@ -49,9 +50,9 @@
           <el-tag v-if="!props.row.isMl" type="info">否</el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="checkPermission(['ADMIN','TBWAPMALL_ALL','TBWAPMALL_EDIT','TBWAPMALL_DELETE'])" fixed="right" label="操作" width="150px" align="center">
+      <el-table-column v-if="checkPermission(['ADMIN','MALL_ALL','MALL_EDIT'])" fixed="right" label="操作" width="150px" align="center">
         <template slot-scope="scope">
-          <el-button v-permission="['ADMIN','TBWAPMALL_ALL','TBWAPMALL_EDIT']" size="mini" type="primary" icon="el-icon-edit" @click="edit(scope.row)"/>
+          <el-button v-permission="['ADMIN','MALL_ALL','MALL_EDIT']" size="mini" type="primary" icon="el-icon-edit" @click="edit(scope.row)"/>
         </template>
       </el-table-column>
     </el-table>

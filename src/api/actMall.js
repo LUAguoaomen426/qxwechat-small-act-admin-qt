@@ -97,3 +97,10 @@ export function deleteDraw(actCode, drawId) {
     method: 'delete'
   })
 }
+
+export function getActList(size) {
+  return request({
+    url: 'api/actModule?size=' + size,
+    method: 'get'
+  })
+}
