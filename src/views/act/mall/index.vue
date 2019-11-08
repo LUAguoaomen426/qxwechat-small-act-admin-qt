@@ -87,7 +87,7 @@
       <el-table-column prop="mallName" label="商场" />
       <el-table-column prop="isJoin" label="是否参加">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.isJoin" active-color="#13ce66" inactive-color="#ff4949" />
+          <el-switch v-model="scope.row.isJoin" active-color="#13ce66" inactive-color="#ff4949" @change="changeIsJoin(scope.row)" />
         </template>
       </el-table-column>
       <el-table-column label="操作">
@@ -526,6 +526,7 @@ export default {
       btnLoading: false,
       tableData: [],
       newTableData: [],
+      saveTableData: [],
       newChangeAdMallList: [],
       actSpeclinkUploadParam: { specCode: '' },
       linkData: [],
@@ -645,13 +646,23 @@ export default {
           console.log('取消')
         })
     },
+    // 商场修改按钮触发事件
+    changeIsJoin(data) {
+      if (!this.saveTableData.includes(data)) {
+        this.saveTableData.push(data)
+      }
+    },
     // 保存
     keepE() {
       this.$confirm('确认保存？')
         .then(_ => {
           console.log('确认')
+          if (this.saveTableData.length < 1) {
+            this.$message('当前数据未发生变动')
+            return
+          }
           this.loading = true
-          saveMallInfo(this.$route.query.actCode, this.tableData)
+          saveMallInfo(this.$route.query.actCode, this.saveTableData)
             .then(res => {
               console.log('保存活动商场数据', res)
               if (res.code !== 200) {
