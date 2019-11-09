@@ -3,9 +3,6 @@
 qxwechat-small-act-admin 前端源码
 
 
-#### 开发文档
-[https://docs.auauz.net/#/](https://docs.auauz.net/#/)
-
 #### 前端模板
 
 初始模板基于： [https://github.com/PanJiaChen/vue-admin-template](https://github.com/PanJiaChen/vue-admin-template)
