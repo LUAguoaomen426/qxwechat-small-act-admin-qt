@@ -1,6 +1,18 @@
 <template>
   <div class="app-container">
     <div class="head-container">
+      <div class="page-container">
+        <b>活动名称：</b>
+        <el-button type="text">
+          <router-link :to="{path:'/act/actList'}">
+            {{ this.$route.query.actName }}
+          </router-link>
+        </el-button>
+        <b>活动编号：</b>
+        <label>{{ this.$route.query.actCode }}</label>
+        <b>英文名称 ：</b>
+        <label>{{ this.$route.query.secondModuleName }}</label>
+      </div>
       <el-menu
         :default-active="activeIndex"
         class="el-menu-demo"
@@ -1191,4 +1203,17 @@ export default {
   width: 250px;
   margin: 0 0 0 35%;
 }
+  .page-container label{
+    font-size: 14px;
+    color: #5e6d82;
+    line-height: 1.5em;
+  }
+  .page-container b{
+    margin-left: 40px;
+    font-size: 15px;
+    line-height: 1.5em;
+  }
+  .page-container{
+    margin: 10px 5px 10px;
+  }
 </style>
