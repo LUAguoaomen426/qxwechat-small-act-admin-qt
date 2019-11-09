@@ -325,13 +325,14 @@
         <el-form-item label="图片">
           <el-upload
             ref="upload"
+            v-model="newChangeAd.showImage"
             :file-list="newChangeAd.fileList"
             :on-exceed="handleExceed"
             :on-success="uploadShowImage"
-            limit="1"
+            :limit="1"
+            :show-file-list="true"
             class="upload-demo"
             action="https://wxxcx-api.chinaredstar.com/file/upload"
-            show-file-list="false"
             list-type="picture"
             style="margin-bottom: 0;"
           >
@@ -895,6 +896,7 @@ export default {
     uploadShowImage(res, file) {
       console.log('图片上传', res, file)
       this.addAdForm.showImage = res.dataMap.fileUrl
+      this.newChangeAd.showImage = res.dataMap.fileUrl
     },
     // 修改广告位-取消按钮
     noChangeShopping() {
