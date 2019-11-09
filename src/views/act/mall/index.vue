@@ -184,10 +184,10 @@
     </el-table>
     <!-- 添加广告位开始 -->
     <el-dialog :visible.sync="addAdShow" append-to-body title="新增" width="60%">
-      <el-form ref="form" :model="addAdForm" label-width="80px">
+      <el-form ref="addAdForm" :model="addAdForm" :rules="rules2" label-width="80px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="名称">
+            <el-form-item label="名称" prop="name">
               <el-input v-model="addAdForm.name" style="width: 200px" placeholder="请输入广告位名称" />
             </el-form-item>
           </el-col>
@@ -252,7 +252,7 @@
           </el-upload>
         </el-form-item>
         <el-row v-if="addAdForm.type ==1">
-          <el-form-item label="绑定活动">
+          <el-form-item label="绑定活动" prop="bindActCode">
             <el-select v-model="addAdForm.bindActCode" placeholder="请选择" style="width: 200px">
               <el-option v-for="act in actList" :key="act.moduleName" :label="act.moduleName" :value="act.actCode" />
             </el-select>
@@ -266,10 +266,10 @@
     </el-dialog>
     <!-- 特殊链接修改开始 -->
     <el-dialog :visible.sync="shoppingListShow" append-to-body title="修改" width="60%">
-      <el-form ref="newChangeAd" :model="newChangeAd" label-width="80px">
+      <el-form ref="newChangeAd" :rules="rules" :model="newChangeAd" label-width="80px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="名称">
+            <el-form-item prop="name" label="名称">
               <el-input v-model="newChangeAd.name" style="width: 200px" placeholder="请输入广告位名称" />
             </el-form-item>
           </el-col>
@@ -340,7 +340,7 @@
           </el-upload>
         </el-form-item>
         <el-row v-if="newChangeAd.type ==1">
-          <el-form-item label="绑定活动">
+          <el-form-item label="绑定活动" prop="bindActCode">
             <el-select v-model="newChangeAd.bindActCode" placeholder="请选择" style="width: 200px">
               <el-option v-for="act in actList" :key="act.moduleName" :label="act.moduleName" :value="act.actCode" />
             </el-select>
@@ -530,6 +530,20 @@ export default {
   components: { eForm, copy },
   mixins: [initData],
   data: function() {
+    var validateAct = (rule, value, callback) => {
+      if (!value && this.newChangeAd.type === 1) {
+        callback(new Error('请输入绑定活动'))
+      } else {
+        callback()
+      }
+    }
+    var validateAct2 = (rule, value, callback) => {
+      if (!value && this.addAdForm.type === '1') {
+        callback(new Error('请输入绑定活动'))
+      } else {
+        callback()
+      }
+    }
     return {
       btnLoading: false,
       tableData: [],
@@ -549,7 +563,17 @@ export default {
         url: '',
         showImage: '',
         haveTL: null,
-        time: []
+        time: [],
+        bindActCode: '',
+        type: ''
+      },
+      rules2: {
+        name: [
+          { required: true, message: '请输入广告位名称', trigger: 'blur' }
+        ],
+        bindActCode: [
+          { validator: validateAct2, trigger: 'blur' }
+        ]
       },
       shoppingListShow: false,
       actList: [],
@@ -564,6 +588,14 @@ export default {
         mallList: [],
         fileList: [],
         bindActCode: ''
+      },
+      rules: {
+        name: [
+          { required: true, message: '请输入广告位名称', trigger: 'blur' }
+        ],
+        bindActCode: [
+          { validator: validateAct, trigger: 'blur' }
+        ]
       },
       luckDraw: [],
       drawData: {},
@@ -865,33 +897,40 @@ export default {
       )
     },
     sureAddAd() {
-      this.btnLoading = true
       console.log('新增广告位', this.addAdForm)
-      addSpecLink(this.$route.query.actCode, this.addAdForm)
-        .then(res => {
-          console.log('新增广告位接口返回', res)
-          if (res.code !== 200) {
-            this.$notify({
-              title: res.message,
-              type: 'error',
-              duration: 2500
+      this.$refs['addAdForm'].validate((valid) => {
+        if (valid) {
+          this.btnLoading = true
+          addSpecLink(this.$route.query.actCode, this.addAdForm)
+            .then(res => {
+              console.log('新增广告位接口返回', res)
+              if (res.code !== 200) {
+                this.$notify({
+                  title: res.message,
+                  type: 'error',
+                  duration: 2500
+                })
+              } else {
+                this.$notify({
+                  title: '新增成功',
+                  type: 'success',
+                  duration: 2500
+                })
+                this.handleSelect('2', 2)
+                this.addAdShow = false
+              }
+              this.btnLoading = false
             })
-          } else {
-            this.$notify({
-              title: '新增成功',
-              type: 'success',
-              duration: 2500
+            .catch(err => {
+              this.linkLoading = false
+              this.btnLoading = false
+              console.log(err.response.data.message)
             })
-            this.handleSelect('2', 2)
-            this.addAdShow = false
-          }
-          this.btnLoading = false
-        })
-        .catch(err => {
-          this.linkLoading = false
-          this.btnLoading = false
-          console.log(err.response.data.message)
-        })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
     },
     uploadShowImage(res, file) {
       console.log('图片上传', res, file)
@@ -909,37 +948,43 @@ export default {
     },
     // 修改广告位-确定按钮
     sureChangeShopping() {
-      this.btnLoading = true
-      console.log('修改广告位', this.newChangeAd)
-
-      this.newChangeAd.changeMallList = this.newChangeAdMallList
-      saveSpecLink(this.$route.query.actCode, this.newChangeAd)
-        .then(res => {
-          console.log('修改广告位接口返回', res)
-          // this.linkLoading = true
-          if (res.code !== 200) {
-            this.$notify({
-              title: res.message,
-              type: 'error',
-              duration: 2500
+      this.$refs['newChangeAd'].validate((valid) => {
+        if (valid) {
+          this.btnLoading = true
+          console.log('修改广告位', this.newChangeAd)
+          this.newChangeAd.changeMallList = this.newChangeAdMallList
+          saveSpecLink(this.$route.query.actCode, this.newChangeAd)
+            .then(res => {
+              console.log('修改广告位接口返回', res)
+              // this.linkLoading = true
+              if (res.code !== 200) {
+                this.$notify({
+                  title: res.message,
+                  type: 'error',
+                  duration: 2500
+                })
+              } else {
+                // this.linkLoading = false
+                this.$notify({
+                  title: '修改成功',
+                  type: 'success',
+                  duration: 2500
+                })
+                this.handleSelect('2', 2)
+                this.shoppingListShow = false
+              }
+              this.btnLoading = false
             })
-          } else {
-            // this.linkLoading = false
-            this.$notify({
-              title: '修改成功',
-              type: 'success',
-              duration: 2500
+            .catch(err => {
+              this.linkLoading = false
+              this.btnLoading = false
+              console.log(err.response.data.message)
             })
-            this.handleSelect('2', 2)
-            this.shoppingListShow = false
-          }
-          this.btnLoading = false
-        })
-        .catch(err => {
-          this.linkLoading = false
-          this.btnLoading = false
-          console.log(err.response.data.message)
-        })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
     },
     // 广告位——上传
     adUpload() {
