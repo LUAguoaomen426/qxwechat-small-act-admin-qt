@@ -445,8 +445,8 @@ export default {
       this.pvuvLoading = true
       var obj = {
         source: this.$route.query.actCode,
-        startTime: this.formPVUVInline ? dateFormat(this.formPVUVInline[0], 'yyyy-MM-dd') : '',
-        endTime: this.formPVUVInline ? dateFormat(this.formPVUVInline[1], 'yyyy-MM-dd') : '',
+        startTime: this.formPVUVInline ? dateFormat(this.formPVUVInline[0], 'yyyy-MM-dd') + ' 00:00:00' : '',
+        endTime: this.formPVUVInline ? dateFormat(this.formPVUVInline[1], 'yyyy-MM-dd') + ' 23:59:59' : '',
         actualFlag: flag
       }
       analysisPVUVData(obj).then(res => {
@@ -502,8 +502,8 @@ export default {
       var obj = {
         type: 'lucky',
         source: this.$route.query.actCode,
-        startTime: this.formInline ? dateFormat(this.formInline[0], 'yyyy-MM-dd') : '',
-        endTime: this.formInline ? dateFormat(this.formInline[1], 'yyyy-MM-dd') : ''
+        startTime: this.formInline ? dateFormat(this.formInline[0], 'yyyy-MM-dd') + ' 00:00:00' : '',
+        endTime: this.formInline ? dateFormat(this.formInline[1], 'yyyy-MM-dd') + ' 23:59:59' : ''
       }
       analysisFlopData(obj).then(res => {
         console.log('抽奖数据', res)
@@ -542,8 +542,8 @@ export default {
         mallFlag: this.form.mallFlag,
         mobile: this.form.mobile,
         grade: this.form.grade,
-        startTime: this.form.time ? dateFormat(this.form.time[0], 'yyyy-MM-dd') : '',
-        endTime: this.form.time ? dateFormat(this.form.time[1], 'yyyy-MM-dd') : ''
+        startTime: this.form.time ? dateFormat(this.form.time[0], 'yyyy-MM-dd') + ' 00:00:00' : '',
+        endTime: this.form.time ? dateFormat(this.form.time[1], 'yyyy-MM-dd') + ' 23:59:59' : ''
       }
       this.gradeOptions = []
       this.luckyLoading = true

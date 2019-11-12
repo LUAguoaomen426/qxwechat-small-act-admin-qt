@@ -35,7 +35,7 @@
       </el-table-column>
       <el-table-column prop="endTime" label="活动结束时间">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.endTime) }}</span>
+          <span>{{ parseTime(scope.row.actEndTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="linkUrl" label="Url">
