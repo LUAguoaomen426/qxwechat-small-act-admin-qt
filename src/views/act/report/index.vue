@@ -278,13 +278,12 @@
                 <el-form-item label="商场">
                   <el-input v-model="form.omsCode" placeholder="请输入商场"/>
                 </el-form-item>
-                <el-form-item label="留资">
-                  <el-input v-model="form.omsCode" placeholder="请选择团/分会场"/>
+                <el-form-item label="留资分会场/页面">
+                  <el-input v-model="form.omsCode" placeholder="请选择分会场/页面"/>
                 </el-form-item>
               </div>
               <el-form-item label="选择时间">
                 <el-date-picker
-                  v-model="form.time"
                   type="datetimerange"
                   size="small"
                   range-separator="至"
