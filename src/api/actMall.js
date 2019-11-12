@@ -99,7 +99,9 @@ export function deleteDraw(actCode, drawId) {
 }
 
 export function getActList(size) {
+  const sort = 'isDelete,orderLevel,asc'
   return request({
+    params: { sort: sort },
     url: 'api/actModule?size=' + size,
     method: 'get'
   })

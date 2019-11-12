@@ -68,8 +68,8 @@ export const constantRouterMap = [
       {
         path: 'mall',
         component: () => import('@/views/act/mall/index'),
-        name: '活动商场配置',
-        meta: { title: '活动商场配置', icon: 'index', noCache: true }
+        name: '活动配置',
+        meta: { title: '活动配置', icon: 'index', noCache: true }
       }
     ]
   },

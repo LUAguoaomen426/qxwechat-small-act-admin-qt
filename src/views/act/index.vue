@@ -78,10 +78,10 @@
       <el-table-column v-if="checkPermission(['ADMIN','ACT_ALL','ACT_UPDATE','ACT_SETTING','REPORT_ALL','ACT_MALL_ALL','ACT_SPEC_ALL','ACT_DRAW_ALL','REPORT_ACT_PVUV','REPORT_ACT_GROUP_LIST','REPORT_ACT_GROUP_ADD','REPORT_ACT_TICKET_ADD','REPORT_DRAW_ANALYSIS_FLOP','REPORT_DRAW_ANALYSIS_LUCKY','REPORT_ACT_CARD_LIST'])" fixed="right" label="操作" width="150px" align="center">
         <template slot-scope="scope">
           <el-button v-permission="['ADMIN','ACT_ALL','ACT_UPDATE']" size="small" type="text" @click="edit(scope.row)">编辑</el-button>
-          <router-link :to="{path:'/actMall/mall',query:{'actCode':scope.row.actCode}}">
+          <router-link :to="{path:'/actMall/mall',query:{'actCode':scope.row.actCode,'actName':scope.row.moduleName,'secondModuleName':scope.row.secondModuleName}}">
             <el-button v-permission="['ADMIN','ACT_ALL','ACT_SETTING','ACT_MALL_ALL','ACT_SPEC_ALL','ACT_DRAW_ALL']" size="small" type="text">配置</el-button>
           </router-link>
-          <router-link :to="{path:'/report/index',query:{'actCode':scope.row.actCode}}">
+          <router-link :to="{path:'/report/index',query:{'actCode':scope.row.actCode,'actName':scope.row.moduleName,'secondModuleName':scope.row.secondModuleName}}">
             <el-button v-permission="['ADMIN','ACT_ALL','REPORT_ALL','REPORT_ACT_PVUV','REPORT_ACT_GROUP_LIST','REPORT_ACT_GROUP_ADD','REPORT_ACT_TICKET_ADD','REPORT_DRAW_ANALYSIS_FLOP','REPORT_DRAW_ANALYSIS_LUCKY','REPORT_ACT_CARD_LIST']" v-if="scope.row.subType == 1" size="small" type="text">数据报表</el-button>
           </router-link>
         </template>
