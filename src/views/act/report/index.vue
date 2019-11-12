@@ -261,6 +261,41 @@
             <el-table-column prop="gradeName" label="奖品"/>
           </el-table>
         </el-tab-pane>
+        <el-tab-pane v-loading="signUpLoading" v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_SIGN_UP'])" label="留资记录" name="winningRecord">
+        <el-form
+              ref=""
+              :inline="true"
+              label-width="80px"
+              size="small"
+              class="demo-form-inline">
+              <div>
+                <el-form-item label="姓名">
+                  <el-input v-model="form.province" placeholder="请输入姓名"/>
+                </el-form-item>
+                <el-form-item label="用户手机">
+                  <el-input v-model="form.mobile" placeholder="请输入手机号"/>
+                </el-form-item>
+                <el-form-item label="商场">
+                  <el-input v-model="form.omsCode" placeholder="请输入商场"/>
+                </el-form-item>
+                <el-form-item label="留资">
+                  <el-input v-model="form.omsCode" placeholder="请选择团/分会场"/>
+                </el-form-item>
+              </div>
+              <el-form-item label="选择时间">
+                <el-date-picker
+                  v-model="form.time"
+                  type="datetimerange"
+                  size="small"
+                  range-separator="至"
+                  start-placeholder="开始时间"
+                  end-placeholder="结束时间"/>
+              </el-form-item>
+              <el-form-item>
+                <el-button v-permission="['ADMIN','REPORT_ALL','REPORT_DRAW_ANALYSIS_LUCKY']" type="success" size="mini" icon="el-icon-search" @click="setSubmit">查询</el-button>
+              </el-form-item>
+            </el-form>
+        </el-tab-pane>
       </el-tabs>
     </div>
   </div>
