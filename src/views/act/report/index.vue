@@ -258,6 +258,7 @@
 import checkPermission from '@/utils/permission'
 import { analysisPVUVData, number, analysisFlopData, groupCount, analysisLuckyData, addGroupNumber, addTicketNumber } from '@/api/report'
 import countTo from 'vue-count-to'
+import { dateFormat } from '@/utils/formatDate'
 
 export default {
   components: { countTo },
@@ -342,7 +343,7 @@ export default {
   },
   mounted: function() {
     var now = new Date()
-    var end = now.getTime() + 3600 * 1000 * 24
+    var end = new Date(now.getTime() + 3600 * 1000 * 24)
     this.formPVUVInline.push(now)
     this.formPVUVInline.push(end)
     this.formInline.push(now)
@@ -432,8 +433,8 @@ export default {
       this.pvuvLoading = true
       var obj = {
         source: this.$route.query.actCode,
-        startTime: this.formPVUVInline ? this.formPVUVInline[0] : '',
-        endTime: this.formPVUVInline ? this.formPVUVInline[1] : '',
+        startTime: this.formPVUVInline ? dateFormat(this.formPVUVInline[0], 'yyyy-MM-dd') : '',
+        endTime: this.formPVUVInline ? dateFormat(this.formPVUVInline[1], 'yyyy-MM-dd') : '',
         actualFlag: flag
       }
       analysisPVUVData(obj).then(res => {
@@ -489,8 +490,8 @@ export default {
       var obj = {
         type: 'lucky',
         source: this.$route.query.actCode,
-        startTime: this.formInline ? this.formInline[0] : '',
-        endTime: this.formInline ? this.formInline[1] : ''
+        startTime: this.formInline ? dateFormat(this.formInline[0], 'yyyy-MM-dd') : '',
+        endTime: this.formInline ? dateFormat(this.formInline[1], 'yyyy-MM-dd') : ''
       }
       analysisFlopData(obj).then(res => {
         console.log('抽奖数据', res)
@@ -529,8 +530,8 @@ export default {
         mallFlag: this.form.mallFlag,
         mobile: this.form.mobile,
         grade: this.form.grade,
-        startTime: this.form.time ? this.form.time[0] : '',
-        endTime: this.form.time ? this.form.time[1] : ''
+        startTime: this.form.time ? dateFormat(this.form.time[0], 'yyyy-MM-dd') : '',
+        endTime: this.form.time ? dateFormat(this.form.time[1], 'yyyy-MM-dd') : ''
       }
       this.gradeOptions = []
       this.luckyLoading = true
