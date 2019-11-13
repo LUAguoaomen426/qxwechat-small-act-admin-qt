@@ -13,13 +13,22 @@
         <b>英文名称 ：</b>
         <label>{{ this.$route.query.secondModuleName }}</label>
       </div>
-      <el-tabs v-model="subMenu" @tab-click="handleClick">
-        <el-tab-pane v-loading="pvuvLoading" v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_PVUV'])" label="PV/UV" name="pvuv">
+      <el-tabs
+        v-model="subMenu"
+        @tab-click="handleClick"
+      >
+        <el-tab-pane
+          v-loading="pvuvLoading"
+          v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_PVUV'])"
+          label="PV/UV"
+          name="pvuv"
+        >
           <div class="from">
             <el-form
               :inline="true"
               label-width="80px"
-              class="demo-form-inline">
+              class="demo-form-inline"
+            >
               <el-form-item label="选择日期">
                 <el-date-picker
                   v-model="formPVUVInline"
@@ -28,11 +37,22 @@
                   start-placeholder="开始日期"
                   end-placeholder="结束日期"
                   format="yyyy-MM-dd"
-                  size="mini"/>
+                  size="mini"
+                />
               </el-form-item>
               <el-form-item>
-                <el-button type="success" size="mini" icon="el-icon-search" @click="onPVUVSubmit">查询</el-button>
-                <el-button type="primary" size="mini" @click="onPVUVActualSubmit"><svg-icon icon-class="real"/>&nbsp;实时查询</el-button>
+                <el-button
+                  type="success"
+                  size="mini"
+                  icon="el-icon-search"
+                  @click="onPVUVSubmit"
+                >查询</el-button>
+                <el-button
+                  type="primary"
+                  size="mini"
+                  @click="onPVUVActualSubmit"
+                >
+                  <svg-icon icon-class="real" />&nbsp;实时查询</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -42,47 +62,76 @@
             :settings="chartSettings"
             width="77.7vw"
             height="400px"
-            style="background-color:white"/>
+            style="background-color:white"
+          />
 
-          <el-table :data="tablePVUVData" style="width: 100%">
+          <el-table
+            :data="tablePVUVData"
+            style="width: 100%"
+          >
+            <el-table-column type="index" />
             <el-table-column
-              type="index"/>
-            <el-table-column prop="date" label="时间段"/>
-            <el-table-column prop="pv" label="PV"/>
-            <el-table-column prop="uv" label="UV"/>
+              prop="date"
+              label="时间段"
+            />
+            <el-table-column
+              prop="pv"
+              label="PV"
+            />
+            <el-table-column
+              prop="uv"
+              label="UV"
+            />
           </el-table>
         </el-tab-pane>
-        <el-tab-pane v-loading="numberLoading" v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_GROUP_LIST'])" label="参团人数" name="first">
+        <el-tab-pane
+          v-loading="numberLoading"
+          v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_GROUP_LIST'])"
+          label="参团人数"
+          name="first"
+        >
           <el-form label-width="160px">
             <el-row style="padding-top:50px;margin:10px;left: -80px;">
-              <el-col :span="5" :offset="1">
+              <el-col
+                :span="5"
+                :offset="1"
+              >
                 <el-form-item label="真">
                   <countTo
                     ref="countTo1"
                     :start-val="groupNumberStart"
                     :end-val="groupNumberEnd"
                     :duration="3000"
-                    class="number"/>
+                    class="number"
+                  />
                 </el-form-item>
               </el-col>
-              <el-col :span="7" :offset="1">
+              <el-col
+                :span="7"
+                :offset="1"
+              >
                 <el-form-item label="假">
                   <count-to
                     ref="countTo2"
                     :start-val="extraNumberStart"
                     :end-val="extraNumberEnd"
                     :duration="3000"
-                    class="number"/>
+                    class="number"
+                  />
                 </el-form-item>
               </el-col>
-              <el-col :span="9" :offset="1">
+              <el-col
+                :span="9"
+                :offset="1"
+              >
                 <el-form-item label="总">
                   <count-to
                     ref="countTo3"
                     :start-val="totalNumberStart"
                     :end-val="totalNumberEnd"
                     :duration="3000"
-                    class="number"/>
+                    class="number"
+                  />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -92,12 +141,18 @@
                   <el-input
                     id="addGroupNumber"
                     v-model="peopleNum"
-                    name="addGroupNumber"/>
+                    name="addGroupNumber"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="6">
                 <el-form-item>
-                  <el-button v-permission="['ADMIN','REPORT_ALL','REPORT_ACT_GROUP_ADD']" type="primary" icon="el-icon-d-arrow-right" @click="changePeopleNum">
+                  <el-button
+                    v-permission="['ADMIN','REPORT_ALL','REPORT_ACT_GROUP_ADD']"
+                    type="primary"
+                    icon="el-icon-d-arrow-right"
+                    @click="changePeopleNum"
+                  >
                     GO
                   </el-button>
                 </el-form-item>
@@ -105,51 +160,127 @@
             </el-row>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane v-loading="groupLoading" v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_CARD_LIST'])" label="团打卡数据" name="clockCard">
-          <el-table :data="clockCardTableData" class="tab_box">
-            <el-table-column prop="groupName" label="团名称"/>
-            <el-table-column prop="count" label="打卡人数"/>
+        <el-tab-pane
+          v-loading="groupLoading"
+          v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_CARD_LIST'])"
+          label="团打卡数据"
+          name="clockCard"
+        >
+          <el-table
+            :data="clockCardTableData"
+            class="tab_box"
+          >
+            <el-table-column
+              prop="groupName"
+              label="团名称"
+            />
+            <el-table-column
+              prop="count"
+              label="打卡人数"
+            />
           </el-table>
         </el-tab-pane>
-        <el-tab-pane v-loading="ticketLoading" v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_TICKET_ADD'])" label="单品券人数" name="second">
+        <el-tab-pane
+          v-loading="ticketLoading"
+          v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_TICKET_ADD'])"
+          label="单品券人数"
+          name="second"
+        >
           <el-form label-width="160px">
             <el-row style="padding: 40px;">
               请输入区间：
-              <el-input v-model="minPrice" type="number" style="margin-left: 50px;width: 100px;" class="ticket" size="small" @onchange="changePrice"/>
+              <el-input
+                v-model="minPrice"
+                type="number"
+                style="margin-left: 50px;width: 100px;"
+                class="ticket"
+                size="small"
+                @onchange="changePrice"
+              />
               --
-              <el-input v-model="maxPrice" type="number" style="width: 100px;" class="ticket" @onchange="changePrice"/>
+              <el-input
+                v-model="maxPrice"
+                type="number"
+                style="width: 100px;"
+                class="ticket"
+                @onchange="changePrice"
+              />
               <div style="margin-top: 10px">
                 <div><span class="min_price">{{ min_price }}</span> 每次增加---
-                  <el-input v-model="lowMinNumber" type="number" style="width: 100px;" class="ticket"/>
+                  <el-input
+                    v-model="lowMinNumber"
+                    type="number"
+                    style="width: 100px;"
+                    class="ticket"
+                  />
                   ~
-                  <el-input v-model="lowMaxNumber" type="number" style="width: 100px;" class="ticket"/>
+                  <el-input
+                    v-model="lowMaxNumber"
+                    type="number"
+                    style="width: 100px;"
+                    class="ticket"
+                  />
                 </div>
-                <div style="margin-left: -30px"><span class="min_price">{{ min_price }}</span>-<span
-                  class="max_price">{{ max_price }}</span> 每次增加---
-                  <el-input v-model="midMinNumber" type="number" style="width: 100px;" class="ticket"/>
+                <div style="margin-left: -30px"><span class="min_price">{{ min_price }}</span>-<span class="max_price">{{ max_price }}</span> 每次增加---
+                  <el-input
+                    v-model="midMinNumber"
+                    type="number"
+                    style="width: 100px;"
+                    class="ticket"
+                  />
                   ~
-                  <el-input v-model="midMaxNumber" type="number" style="width: 100px;" class="ticket"/>
+                  <el-input
+                    v-model="midMaxNumber"
+                    type="number"
+                    style="width: 100px;"
+                    class="ticket"
+                  />
                 </div>
                 <div>> <span class="max_price">{{ max_price }}</span> 每次增加---
-                  <el-input v-model="highMinNumber" type="number" style="width: 100px;" class="ticket"/>
+                  <el-input
+                    v-model="highMinNumber"
+                    type="number"
+                    style="width: 100px;"
+                    class="ticket"
+                  />
                   ~
-                  <el-input v-model="highMaxNumber" type="number" style="width: 100px;" class="ticket"/>
+                  <el-input
+                    v-model="highMaxNumber"
+                    type="number"
+                    style="width: 100px;"
+                    class="ticket"
+                  />
                 </div>
               </div>
-              <div id="ticketSubmit" style="margin-top: 10px">
-                <el-button v-permission="['ADMIN','REPORT_ALL','REPORT_ACT_TICKET_ADD']" v-loading="ticketLoading" type="primary" icon="el-icon-d-arrow-right" @click="addTicket">
+              <div
+                id="ticketSubmit"
+                style="margin-top: 10px"
+              >
+                <el-button
+                  v-permission="['ADMIN','REPORT_ALL','REPORT_ACT_TICKET_ADD']"
+                  v-loading="ticketLoading"
+                  type="primary"
+                  icon="el-icon-d-arrow-right"
+                  @click="addTicket"
+                >
                   GO
                 </el-button>
               </div>
             </el-row>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane v-loading="flopLoading" v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_DRAW_ANALYSIS_FLOP'])" label="翻牌记录" name="flopRecord">
+        <el-tab-pane
+          v-loading="flopLoading"
+          v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_DRAW_ANALYSIS_FLOP'])"
+          label="翻牌记录"
+          name="flopRecord"
+        >
           <div class="from">
             <el-form
               :inline="true"
               label-width="80px"
-              class="demo-form-inline">
+              class="demo-form-inline"
+            >
               <el-form-item label="选择日期">
                 <el-date-picker
                   v-model="formInline"
@@ -158,10 +289,17 @@
                   start-placeholder="开始日期"
                   end-placeholder="结束日期"
                   format="yyyy-MM-dd"
-                  size="mini"/>
+                  size="mini"
+                />
               </el-form-item>
               <el-form-item>
-                <el-button v-permission="['ADMIN','REPORT_ALL','REPORT_DRAW_ANALYSIS_FLOP']" type="success" size="mini" icon="el-icon-search" @click="onSubmit">查询</el-button>
+                <el-button
+                  v-permission="['ADMIN','REPORT_ALL','REPORT_DRAW_ANALYSIS_FLOP']"
+                  type="success"
+                  size="mini"
+                  icon="el-icon-search"
+                  @click="onSubmit"
+                >查询</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -170,58 +308,101 @@
             :extend="extend"
             :settings="chartSettings"
             width="77.7vw"
-            height="400px"/>
-          <el-table :data="tableData" style="width: 100%">
+            height="400px"
+          />
+          <el-table
+            :data="tableData"
+            style="width: 100%"
+          >
+            <el-table-column type="index" />
             <el-table-column
-              type="index"/>
-            <el-table-column prop="date" label="时间段"/>
-            <el-table-column prop="totalNum" label="参与人次"/>
-            <el-table-column prop="peopleNum" label="去重人数"/>
-            <el-table-column prop="luckyNum" label="中奖人次"/>
+              prop="date"
+              label="时间段"
+            />
+            <el-table-column
+              prop="totalNum"
+              label="参与人次"
+            />
+            <el-table-column
+              prop="peopleNum"
+              label="去重人数"
+            />
+            <el-table-column
+              prop="luckyNum"
+              label="中奖人次"
+            />
           </el-table>
         </el-tab-pane>
-        <el-tab-pane v-loading="luckyLoading" v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_DRAW_ANALYSIS_LUCKY'])" label="中奖记录" name="winningRecord">
+        <el-tab-pane
+          v-loading="luckyLoading"
+          v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_DRAW_ANALYSIS_LUCKY'])"
+          label="中奖记录"
+          name="winningRecord"
+        >
           <div class="froms">
             <el-form
               ref="form"
               :inline="true"
               label-width="80px"
               size="small"
-              class="demo-form-inline">
+              class="demo-form-inline"
+            >
               <div>
                 <el-form-item label="省份">
-                  <el-input v-model="form.province" placeholder="请输入省份"/>
+                  <el-input
+                    v-model="form.province"
+                    placeholder="请输入省份"
+                  />
                 </el-form-item>
                 <el-form-item label="城市">
-                  <el-input v-model="form.city" placeholder="请输入城市"/>
+                  <el-input
+                    v-model="form.city"
+                    placeholder="请输入城市"
+                  />
                 </el-form-item>
                 <!--</div>-->
                 <!--<div>-->
                 <el-form-item label="商场">
-                  <el-input v-model="form.omsCode" placeholder="请输入商场"/>
+                  <el-input
+                    v-model="form.omsCode"
+                    placeholder="请输入商场"
+                  />
                 </el-form-item>
                 <el-form-item label="奖池">
                   <template>
-                    <el-select v-model="form.mallFlag" clearable placeholder="请选择">
+                    <el-select
+                      v-model="form.mallFlag"
+                      clearable
+                      placeholder="请选择"
+                    >
                       <el-option
                         v-for="item in mallFlagOptions"
                         :key="item.value"
                         :label="item.label"
-                        :value="item.value"/>
+                        :value="item.value"
+                      />
                     </el-select>
                   </template>
                 </el-form-item>
                 <el-form-item label="用户手机">
-                  <el-input v-model="form.mobile" placeholder="请输入用户手机"/>
+                  <el-input
+                    v-model="form.mobile"
+                    placeholder="请输入用户手机"
+                  />
                 </el-form-item>
                 <el-form-item label="奖品">
                   <template>
-                    <el-select v-model="form.grade" clearable placeholder="请选择">
+                    <el-select
+                      v-model="form.grade"
+                      clearable
+                      placeholder="请选择"
+                    >
                       <el-option
                         v-for="item in gradeOptions"
                         :key="item.value"
                         :label="item.label"
-                        :value="item.value"/>
+                        :value="item.value"
+                      />
                     </el-select>
                   </template>
                 </el-form-item>
@@ -233,22 +414,52 @@
                   size="small"
                   range-separator="至"
                   start-placeholder="开始时间"
-                  end-placeholder="结束时间"/>
+                  end-placeholder="结束时间"
+                />
               </el-form-item>
               <el-form-item>
-                <el-button v-permission="['ADMIN','REPORT_ALL','REPORT_DRAW_ANALYSIS_LUCKY']" type="success" size="mini" icon="el-icon-search" @click="setSubmit">查询</el-button>
+                <el-button
+                  v-permission="['ADMIN','REPORT_ALL','REPORT_DRAW_ANALYSIS_LUCKY']"
+                  type="success"
+                  size="mini"
+                  icon="el-icon-search"
+                  @click="setSubmit"
+                >查询</el-button>
               </el-form-item>
             </el-form>
           </div>
-          <el-table :data="tableData1" style="width: 100%">
+          <el-table
+            :data="tableData1"
+            style="width: 100%"
+          >
+            <el-table-column type="index" />
             <el-table-column
-              type="index"/>
-            <el-table-column prop="city" label="省份" width="100px"/>
-            <el-table-column prop="province" label="城市" width="100px"/>
-            <el-table-column prop="mallName" label="商场"/>
-            <el-table-column prop="mobile" label="用户手机"/>
-            <el-table-column prop="time" label="时间" width="200px"/>
-            <el-table-column prop="mallFlag" label="奖池">
+              prop="city"
+              label="省份"
+              width="100px"
+            />
+            <el-table-column
+              prop="province"
+              label="城市"
+              width="100px"
+            />
+            <el-table-column
+              prop="mallName"
+              label="商场"
+            />
+            <el-table-column
+              prop="mobile"
+              label="用户手机"
+            />
+            <el-table-column
+              prop="time"
+              label="时间"
+              width="200px"
+            />
+            <el-table-column
+              prop="mallFlag"
+              label="奖池"
+            >
               <template slot-scope="scope">
                 <p v-if="scope.row.mallFlag">
                   <el-tag type="success">是</el-tag>
@@ -258,42 +469,168 @@
                 </p>
               </template>
             </el-table-column>
-            <el-table-column prop="gradeName" label="奖品"/>
+            <el-table-column
+              prop="gradeName"
+              label="奖品"
+            />
           </el-table>
         </el-tab-pane>
-        <el-tab-pane v-loading="signUpLoading" v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_SIGN_UP'])" label="留资记录" name="winningRecord">
-        <el-form
-              ref=""
-              :inline="true"
-              label-width="80px"
-              size="small"
-              class="demo-form-inline">
-              <div>
-                <el-form-item label="姓名">
-                  <el-input v-model="form.province" placeholder="请输入姓名"/>
-                </el-form-item>
-                <el-form-item label="用户手机">
-                  <el-input v-model="form.mobile" placeholder="请输入手机号"/>
-                </el-form-item>
-                <el-form-item label="商场">
-                  <el-input v-model="form.omsCode" placeholder="请输入商场"/>
-                </el-form-item>
-                <el-form-item label="留资分会场/页面">
-                  <el-input v-model="form.omsCode" placeholder="请选择分会场/页面"/>
-                </el-form-item>
-              </div>
-              <el-form-item label="选择时间">
-                <el-date-picker
-                  type="datetimerange"
-                  size="small"
-                  range-separator="至"
-                  start-placeholder="开始时间"
-                  end-placeholder="结束时间"/>
+        <el-tab-pane
+          v-loading="signUpLoading"
+          v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_SIGN_UP'])"
+          label="留资记录"
+          name="signUpRecord"
+        >
+          <el-form
+            ref="signUpForm"
+            :inline="true"
+            label-width="80px"
+            size="small"
+            class="demo-form-inline"
+          >
+            <div>
+              <el-form-item label="姓名">
+                <el-input
+                  v-model="signUpForm.name"
+                  placeholder="请输入姓名"
+                />
               </el-form-item>
-              <el-form-item>
-                <el-button v-permission="['ADMIN','REPORT_ALL','REPORT_DRAW_ANALYSIS_LUCKY']" type="success" size="mini" icon="el-icon-search" @click="setSubmit">查询</el-button>
+              <el-form-item label="用户手机">
+                <el-input
+                  v-model="signUpForm.mobile"
+                  placeholder="请输入手机号"
+                />
               </el-form-item>
-            </el-form>
+              <el-form-item label="商场">
+                <el-input
+                  v-model="signUpForm.mallCondition"
+                  placeholder="请输入商场"
+                />
+              </el-form-item>
+              <el-form-item label="留资页面">
+                <el-select
+                  v-model="signUpForm.type"
+                  placeholder="请选择 留资页面"
+                >
+                  <el-option
+                    v-for="item in signUpTypeOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="环境">
+                <el-select
+                  v-model="signUpForm.cliType"
+                  placeholder="请选择环境"
+                >
+                  <el-option
+                    v-for="item in cliType_Options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="scene">
+                <el-input
+                  v-model="signUpForm.scene"
+                  placeholder="请输入scene"
+                />
+              </el-form-item>
+            </div>
+            <el-form-item label="选择时间">
+              <el-date-picker
+                v-model="signUpForm.time"
+                type="daterange"
+                size="small"
+                range-separator="至"
+                start-placeholder="开始时间"
+                end-placeholder="结束时间"
+              />
+            </el-form-item>
+            <el-form-item>
+              <el-button
+                v-permission="['ADMIN','REPORT_ALL','REPORT_DRAW_ANALYSIS_LUCKY']"
+                type="success"
+                size="mini"
+                icon="el-icon-search"
+                @click="setSubmit"
+              >查询</el-button>
+            </el-form-item>
+          </el-form>
+          <el-table
+            :data="signUpTableData"
+            height="250"
+            style="width: 100%"
+          >
+            <el-table-column
+              type="index"
+              width="50"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="名字"
+              width="180"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="mobile"
+              label="手机号"
+              width="180"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="province"
+              label="省份"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="city"
+              label="城市"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="mallName"
+              label="商场"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="type"
+              label="留资页面"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="updateTime"
+              label="留资时间"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="cliType"
+              label="环境"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="scene"
+              label="scene"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="fromOpenId"
+              label="分享人OpenId"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="fromUnionId"
+              label="分享人UnionId"
+            >
+            </el-table-column>
+          </el-table>
+
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -302,9 +639,18 @@
 
 <script>
 import checkPermission from '@/utils/permission'
-import { analysisPVUVData, number, analysisFlopData, groupCount, analysisLuckyData, addGroupNumber, addTicketNumber } from '@/api/report'
+import {
+  analysisPVUVData,
+  number,
+  analysisFlopData,
+  groupCount,
+  analysisLuckyData,
+  addGroupNumber,
+  addTicketNumber
+} from '@/api/report'
 import countTo from 'vue-count-to'
 import { dateFormat } from '@/utils/formatDate'
+import { cliType, cliTypeOptions } from '@/utils/Enums'
 
 export default {
   components: { countTo },
@@ -364,14 +710,19 @@ export default {
       flopLoading: false,
       luckyLoading: false,
       ticketLoading: false,
+      signUpLoading: false,
       gradeOptions: [],
-      mallFlagOptions: [{
-        value: 'true',
-        label: '是'
-      }, {
-        value: 'false',
-        label: '否'
-      }],
+      mallFlagOptions: [
+        {
+          value: 'true',
+          label: '是'
+        },
+        {
+          value: 'false',
+          label: '否'
+        }
+      ],
+      signUpTypeOptions: [],
       minPrice: 2000,
       maxPrice: 9000,
       lowMinNumber: 5,
@@ -381,12 +732,21 @@ export default {
       highMinNumber: 1,
       highMaxNumber: 3,
       min_price: this.minPrice,
-      max_price: this.maxPrice
+      max_price: this.maxPrice,
+      signUpForm: {
+        name: '',
+        mobile: '',
+        mallCondition: '',
+        type: '',
+        time: [],
+        cliType: null,
+        scene:''
+      },
+      signUpTableData: [],
+      cliType_Options: cliTypeOptions
     }
   },
-  created() {
-
-  },
+  created() {},
   mounted: function() {
     var now = new Date()
     var end = new Date(now.getTime() + 3600 * 1000 * 24)
@@ -396,6 +756,8 @@ export default {
     this.formInline.push(end)
     this.form.time.push(now)
     this.form.time.push(end)
+    this.signUpForm.time.push(now)
+    this.signUpForm.time.push(end)
     // this.getRecord()
   },
   methods: {
@@ -408,23 +770,26 @@ export default {
     },
     changePeopleNum() {
       this.numberLoading = true
-      addGroupNumber(this.$route.query.actCode, this.peopleNum).then(res => {
-        console.log('增加参团人数', res)
-        this.$message({
-          message: '恭喜你，更新成功',
-          type: 'success'
+      addGroupNumber(this.$route.query.actCode, this.peopleNum)
+        .then(res => {
+          console.log('增加参团人数', res)
+          this.$message({
+            message: '恭喜你，更新成功',
+            type: 'success'
+          })
+          this.numberLoading = false
+          this.extraNumberStart = this.extraNumberEnd
+          this.totalNumberStart = this.totalNumberEnd
+          this.extraNumberEnd = this.extraNumberEnd + parseInt(this.peopleNum)
+          this.totalNumberEnd =
+            parseInt(this.groupNumberEnd) + parseInt(this.extraNumberEnd)
+          this.$refs.countTo2.start()
+          this.$refs.countTo3.start()
         })
-        this.numberLoading = false
-        this.extraNumberStart = this.extraNumberEnd
-        this.totalNumberStart = this.totalNumberEnd
-        this.extraNumberEnd = this.extraNumberEnd + parseInt(this.peopleNum)
-        this.totalNumberEnd = parseInt(this.groupNumberEnd) + parseInt(this.extraNumberEnd)
-        this.$refs.countTo2.start()
-        this.$refs.countTo3.start()
-      }).catch(err => {
-        this.numberLoading = false
-        console.log(err.response.data.message)
-      })
+        .catch(err => {
+          this.numberLoading = false
+          console.log(err.response.data.message)
+        })
     },
     addTicket() {
       var minPrice = this.minPrice
@@ -442,7 +807,11 @@ export default {
         })
         return
       }
-      if (parseInt(lowMinNumber) > parseInt(lowMaxNumber) || parseInt(midMinNumber) > parseInt(midMaxNumber) || parseInt(highMinNumber) > parseInt(highMaxNumber)) {
+      if (
+        parseInt(lowMinNumber) > parseInt(lowMaxNumber) ||
+        parseInt(midMinNumber) > parseInt(midMaxNumber) ||
+        parseInt(highMinNumber) > parseInt(highMaxNumber)
+      ) {
         this.$message({
           message: '请输入正确的增长区间，前面的不能比后面的大。',
           type: 'error'
@@ -460,17 +829,19 @@ export default {
         highMaxNumber: highMaxNumber
       }
       this.ticketLoading = true
-      addTicketNumber(this.$route.query.actCode, obj).then(res => {
-        this.ticketLoading = false
-        console.log('增加单品券人数', res)
-        this.$message({
-          message: '恭喜你，更新成功',
-          type: 'success'
+      addTicketNumber(this.$route.query.actCode, obj)
+        .then(res => {
+          this.ticketLoading = false
+          console.log('增加单品券人数', res)
+          this.$message({
+            message: '恭喜你，更新成功',
+            type: 'success'
+          })
         })
-      }).catch(err => {
-        this.ticketLoading = false
-        console.log(err.message)
-      })
+        .catch(err => {
+          this.ticketLoading = false
+          console.log(err.message)
+        })
     },
     onSubmit() {
       this.getRecord()
@@ -479,29 +850,35 @@ export default {
       this.pvuvLoading = true
       var obj = {
         source: this.$route.query.actCode,
-        startTime: this.formPVUVInline ? dateFormat(this.formPVUVInline[0], 'yyyy-MM-dd') + ' 00:00:00' : '',
-        endTime: this.formPVUVInline ? dateFormat(this.formPVUVInline[1], 'yyyy-MM-dd') + ' 23:59:59' : '',
+        startTime: this.formPVUVInline
+          ? dateFormat(this.formPVUVInline[0], 'yyyy-MM-dd') + ' 00:00:00'
+          : '',
+        endTime: this.formPVUVInline
+          ? dateFormat(this.formPVUVInline[1], 'yyyy-MM-dd') + ' 23:59:59'
+          : '',
         actualFlag: flag
       }
-      analysisPVUVData(obj).then(res => {
-        this.pvuvLoading = false
-        console.log('pvuv', res)
-        if (res.dataMap.sourcepvuvvo) {
-          this.tablePVUVData = res.dataMap.sourcepvuvvo
-          this.chartPVUVData.rows = []
-          res.dataMap.sourcepvuvvo.forEach((item, index, array) => {
-            if (index > 1) {
-              this.chartPVUVData.rows.push(item)
-            }
-          })
-        } else {
-          this.tablePVUVData = []
-          this.chartPVUVData.rows = []
-        }
-      }).catch(err => {
-        this.pvuvLoading = false
-        console.log(err.message)
-      })
+      analysisPVUVData(obj)
+        .then(res => {
+          this.pvuvLoading = false
+          console.log('pvuv', res)
+          if (res.dataMap.sourcepvuvvo) {
+            this.tablePVUVData = res.dataMap.sourcepvuvvo
+            this.chartPVUVData.rows = []
+            res.dataMap.sourcepvuvvo.forEach((item, index, array) => {
+              if (index > 1) {
+                this.chartPVUVData.rows.push(item)
+              }
+            })
+          } else {
+            this.tablePVUVData = []
+            this.chartPVUVData.rows = []
+          }
+        })
+        .catch(err => {
+          this.pvuvLoading = false
+          console.log(err.message)
+        })
     },
     handleClick(tab, event) {
       if (tab.name === 'first') {
@@ -516,18 +893,20 @@ export default {
       } else if (tab.name === 'winningRecord') {
         this.getCore()
       } else if (tab.name === 'clockCard') {
-        number(this.$route.query.actCode).then(res => {
-          console.log('number', res)
-          this.groupNumberStart = res.dataMap.groupNumber - 200
-          this.groupNumberEnd = res.dataMap.groupNumber
-          this.extraNumberStart = 0
-          this.extraNumberEnd = res.dataMap.extraNumber
-          this.totalNumberStart = res.dataMap.groupNumber - 200
-          this.totalNumberEnd = res.dataMap.totalNumber
-          // this.chartPVUVData.rows = []
-        }).catch(err => {
-          console.log(err.response.data.message)
-        })
+        number(this.$route.query.actCode)
+          .then(res => {
+            console.log('number', res)
+            this.groupNumberStart = res.dataMap.groupNumber - 200
+            this.groupNumberEnd = res.dataMap.groupNumber
+            this.extraNumberStart = 0
+            this.extraNumberEnd = res.dataMap.extraNumber
+            this.totalNumberStart = res.dataMap.groupNumber - 200
+            this.totalNumberEnd = res.dataMap.totalNumber
+            // this.chartPVUVData.rows = []
+          })
+          .catch(err => {
+            console.log(err.response.data.message)
+          })
         this.getClockCardData()
       }
     },
@@ -536,34 +915,42 @@ export default {
       var obj = {
         type: 'lucky',
         source: this.$route.query.actCode,
-        startTime: this.formInline ? dateFormat(this.formInline[0], 'yyyy-MM-dd') + ' 00:00:00' : '',
-        endTime: this.formInline ? dateFormat(this.formInline[1], 'yyyy-MM-dd') + ' 23:59:59' : ''
+        startTime: this.formInline
+          ? dateFormat(this.formInline[0], 'yyyy-MM-dd') + ' 00:00:00'
+          : '',
+        endTime: this.formInline
+          ? dateFormat(this.formInline[1], 'yyyy-MM-dd') + ' 23:59:59'
+          : ''
       }
-      analysisFlopData(obj).then(res => {
-        console.log('抽奖数据', res)
-        this.flopLoading = false
-        this.tableData = res.dataMap.flopvo
-        this.chartData.rows = []
-        res.dataMap.flopvo.forEach((item, index, array) => {
-          if (index !== 0) {
-            this.chartData.rows.push(item)
-          }
+      analysisFlopData(obj)
+        .then(res => {
+          console.log('抽奖数据', res)
+          this.flopLoading = false
+          this.tableData = res.dataMap.flopvo
+          this.chartData.rows = []
+          res.dataMap.flopvo.forEach((item, index, array) => {
+            if (index !== 0) {
+              this.chartData.rows.push(item)
+            }
+          })
         })
-      }).catch(err => {
-        this.flopLoading = false
-        console.log(err.response.data.message)
-      })
+        .catch(err => {
+          this.flopLoading = false
+          console.log(err.response.data.message)
+        })
     },
     getClockCardData: function() {
       this.groupLoading = true
-      groupCount(this.$route.query.actCode).then(res => {
-        console.log('团打卡', res)
-        this.groupLoading = false
-        this.clockCardTableData = res.dataMap.hashmap
-      }).catch(err => {
-        this.groupLoading = false
-        console.log(err.response.data.message)
-      })
+      groupCount(this.$route.query.actCode)
+        .then(res => {
+          console.log('团打卡', res)
+          this.groupLoading = false
+          this.clockCardTableData = res.dataMap.hashmap
+        })
+        .catch(err => {
+          this.groupLoading = false
+          console.log(err.response.data.message)
+        })
     },
     getCore() {
       var obj = {
@@ -576,25 +963,31 @@ export default {
         mallFlag: this.form.mallFlag,
         mobile: this.form.mobile,
         grade: this.form.grade,
-        startTime: this.form.time ? dateFormat(this.form.time[0], 'yyyy-MM-dd') + ' 00:00:00' : '',
-        endTime: this.form.time ? dateFormat(this.form.time[1], 'yyyy-MM-dd') + ' 23:59:59' : ''
+        startTime: this.form.time
+          ? dateFormat(this.form.time[0], 'yyyy-MM-dd') + ' 00:00:00'
+          : '',
+        endTime: this.form.time
+          ? dateFormat(this.form.time[1], 'yyyy-MM-dd') + ' 23:59:59'
+          : ''
       }
       this.gradeOptions = []
       this.luckyLoading = true
-      analysisLuckyData(obj).then(res => {
-        console.log('中奖记录', res)
-        this.tableData1 = res.dataMap.luckydata.list
-        this.luckyLoading = false
-        res.dataMap.luckydata.gradeMap.forEach((v, index) => {
-          var obj = {}
-          obj.value = index + 1
-          obj.label = v
-          this.gradeOptions.push(obj)
+      analysisLuckyData(obj)
+        .then(res => {
+          console.log('中奖记录', res)
+          this.tableData1 = res.dataMap.luckydata.list
+          this.luckyLoading = false
+          res.dataMap.luckydata.gradeMap.forEach((v, index) => {
+            var obj = {}
+            obj.value = index + 1
+            obj.label = v
+            this.gradeOptions.push(obj)
+          })
         })
-      }).catch(err => {
-        this.luckyLoading = false
-        console.log(err.response.data.message)
-      })
+        .catch(err => {
+          this.luckyLoading = false
+          console.log(err.response.data.message)
+        })
     },
     setSubmit() {
       this.getCore()
@@ -608,22 +1001,22 @@ export default {
 </script>
 
 <style scoped>
-  .number {
-    color: #30B08F;
-    margin: 10px 0;
-    font-size: 65px;
-  }
-  .page-container label{
-    font-size: 14px;
-    color: #5e6d82;
-    line-height: 1.5em;
-  }
-  .page-container b{
-    margin-left: 40px;
-    font-size: 15px;
-    line-height: 1.5em;
-  }
-  .page-container{
-    margin: 10px 5px 10px;
-  }
+.number {
+  color: #30b08f;
+  margin: 10px 0;
+  font-size: 65px;
+}
+.page-container label {
+  font-size: 14px;
+  color: #5e6d82;
+  line-height: 1.5em;
+}
+.page-container b {
+  margin-left: 40px;
+  font-size: 15px;
+  line-height: 1.5em;
+}
+.page-container {
+  margin: 10px 5px 10px;
+}
 </style>
