@@ -322,7 +322,7 @@
                 <el-form-item>
                   <el-button v-permission="['ADMIN','MALL_ALL','MALL_LIST']" class="filter-item" size="mini" type="success" icon="el-icon-search" @click="toQuery">搜索</el-button>
                 </el-form-item>
-              </div></el-form>
+            </div></el-form>
           </div>
           <el-table v-loading="loading" :data="data" style="width: 100%">
             <el-table-column
@@ -353,355 +353,355 @@
 </template>
 
 <script>
-  import checkPermission from '@/utils/permission'
-  import { analysisPVUVData, number, analysisFlopData, groupCount, analysisLuckyData, addGroupNumber, addTicketNumber, getDictTree } from '@/api/report'
-  import countTo from 'vue-count-to'
-  import { dateFormat } from '@/utils/formatDate'
-  import initData from '@/mixins/initData'
-  import Treeselect from '@riophae/vue-treeselect'
-  import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import checkPermission from '@/utils/permission'
+import { analysisPVUVData, number, analysisFlopData, groupCount, analysisLuckyData, addGroupNumber, addTicketNumber, getDictTree } from '@/api/report'
+import countTo from 'vue-count-to'
+import { dateFormat } from '@/utils/formatDate'
+import initData from '@/mixins/initData'
+import Treeselect from '@riophae/vue-treeselect'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
-  export default {
-    components: { countTo, Treeselect },
-    mixins: [initData],
-    data: function() {
-      this.extend = {
-        series: {
-          label: {
-            normal: {
-              show: true
-            }
+export default {
+  components: { countTo, Treeselect },
+  mixins: [initData],
+  data: function() {
+    this.extend = {
+      series: {
+        label: {
+          normal: {
+            show: true
           }
         }
-      }
-      return {
-        subMenu: 'pvuv',
-        formPVUVInline: [],
-        chartPVUVData: {
-          columns: ['date', 'pv', 'uv'],
-          rows: []
-        },
-        chartSettings: {
-          labelMap: {
-            totalNum: '参与人次',
-            peopleNum: '去重人数',
-            luckyNum: '中奖人次'
-          },
-          area: true
-        },
-        tablePVUVData: [],
-        groupNumberStart: 0,
-        groupNumberEnd: 0,
-        extraNumberStart: 0,
-        extraNumberEnd: 0,
-        totalNumberStart: 0,
-        totalNumberEnd: 0,
-        peopleNum: '',
-        dictTree: [],
-        clockCardTableData: [],
-        formInline: [],
-        chartData: {
-          columns: ['date', 'totalNum', 'peopleNum', 'luckyNum'],
-          rows: []
-        },
-        tableData: [],
-        tableData1: [],
-        form: {
-          province: '',
-          city: '',
-          omsCode: '',
-          mallFlag: '',
-          grade: null,
-          mobile: '',
-          time: []
-        },
-        groupLoading: false,
-        pvuvLoading: false,
-        dictDate: [],
-        numberLoading: false,
-        flopLoading: false,
-        luckyLoading: false,
-        ticketLoading: false,
-        btnDailyLoading: false,
-        gradeOptions: [],
-        mallFlagOptions: [{
-          value: 'true',
-          label: '是'
-        }, {
-          value: 'false',
-          label: '否'
-        }],
-        minPrice: 2000,
-        maxPrice: 9000,
-        lowMinNumber: 5,
-        lowMaxNumber: 9,
-        midMinNumber: 2,
-        midMaxNumber: 5,
-        highMinNumber: 1,
-        highMaxNumber: 3,
-        min_price: this.minPrice,
-        max_price: this.maxPrice,
-        query: {},
-        loading: false
-      }
-    },
-    created() {
-
-    },
-    mounted: function() {
-      var now = new Date()
-      var end = new Date(now.getTime() + 3600 * 1000 * 24)
-      this.formPVUVInline.push(now)
-      this.formPVUVInline.push(end)
-      this.formInline.push(now)
-      this.formInline.push(end)
-      this.form.time.push(now)
-      this.form.time.push(end)
-      this.dictDate.push(now)
-      this.dictDate.push(end)
-      this.params['dataDateStart'] = this.dictDate ? dateFormat(this.dictDate[0], 'yyyy-MM-dd') + ' 00:00:00' : ''
-      this.params['dataDateEnd'] = this.dictDate ? dateFormat(this.dictDate[1], 'yyyy-MM-dd') + ' 23:59:59' : ''
-      // this.getRecord()
-    },
-    methods: {
-      dateFormat,
-      checkPermission,
-      beforeInit() {
-        this.url = 'api/btnDaily'
-        const sort = 'id,desc'
-        this.params['current'] = this.page + 1
-        this.params['size'] = this.size
-        this.params['sort'] = sort
-        this.params['source'] = this.$route.query.actCode
-        return true
-      },
-      onPVUVSubmit() {
-        this.getPVUVRecord(false)
-      },
-      onPVUVActualSubmit() {
-        this.getPVUVRecord(true)
-      },
-      changePeopleNum() {
-        this.numberLoading = true
-        addGroupNumber(this.$route.query.actCode, this.peopleNum).then(res => {
-          console.log('增加参团人数', res)
-          this.$message({
-            message: '恭喜你，更新成功',
-            type: 'success'
-          })
-          this.numberLoading = false
-          this.extraNumberStart = this.extraNumberEnd
-          this.totalNumberStart = this.totalNumberEnd
-          this.extraNumberEnd = this.extraNumberEnd + parseInt(this.peopleNum)
-          this.totalNumberEnd = parseInt(this.groupNumberEnd) + parseInt(this.extraNumberEnd)
-          this.$refs.countTo2.start()
-          this.$refs.countTo3.start()
-        }).catch(err => {
-          this.numberLoading = false
-          console.log(err.response.data.message)
-        })
-      },
-      addTicket() {
-        var minPrice = this.minPrice
-        var maxPrice = this.maxPrice
-        var lowMinNumber = this.lowMinNumber
-        var lowMaxNumber = this.lowMaxNumber
-        var midMinNumber = this.midMinNumber
-        var midMaxNumber = this.midMaxNumber
-        var highMinNumber = this.highMinNumber
-        var highMaxNumber = this.highMaxNumber
-        if (parseInt(minPrice) >= parseInt(maxPrice)) {
-          this.$message({
-            message: '请输入正确的价格区间，最小价格不能比最高价格高。',
-            type: 'error'
-          })
-          return
-        }
-        if (parseInt(lowMinNumber) > parseInt(lowMaxNumber) || parseInt(midMinNumber) > parseInt(midMaxNumber) || parseInt(highMinNumber) > parseInt(highMaxNumber)) {
-          this.$message({
-            message: '请输入正确的增长区间，前面的不能比后面的大。',
-            type: 'error'
-          })
-          return
-        }
-        var obj = {
-          minPrice: minPrice,
-          maxPrice: maxPrice,
-          lowMinNumber: lowMinNumber,
-          lowMaxNumber: lowMaxNumber,
-          midMinNumber: midMinNumber,
-          midMaxNumber: midMaxNumber,
-          highMinNumber: highMinNumber,
-          highMaxNumber: highMaxNumber
-        }
-        this.ticketLoading = true
-        addTicketNumber(this.$route.query.actCode, obj).then(res => {
-          this.ticketLoading = false
-          console.log('增加单品券人数', res)
-          this.$message({
-            message: '恭喜你，更新成功',
-            type: 'success'
-          })
-        }).catch(err => {
-          this.ticketLoading = false
-          console.log(err.message)
-        })
-      },
-      onSubmit() {
-        this.getRecord()
-      },
-      getPVUVRecord(flag) {
-        this.pvuvLoading = true
-        var obj = {
-          source: this.$route.query.actCode,
-          startTime: this.formPVUVInline ? dateFormat(this.formPVUVInline[0], 'yyyy-MM-dd') + ' 00:00:00' : '',
-          endTime: this.formPVUVInline ? dateFormat(this.formPVUVInline[1], 'yyyy-MM-dd') + ' 23:59:59' : '',
-          actualFlag: flag
-        }
-        analysisPVUVData(obj).then(res => {
-          this.pvuvLoading = false
-          console.log('pvuv', res)
-          if (res.dataMap.sourcepvuvvo) {
-            this.tablePVUVData = res.dataMap.sourcepvuvvo
-            this.chartPVUVData.rows = []
-            res.dataMap.sourcepvuvvo.forEach((item, index, array) => {
-              if (index > 1) {
-                this.chartPVUVData.rows.push(item)
-              }
-            })
-          } else {
-            this.tablePVUVData = []
-            this.chartPVUVData.rows = []
-          }
-        }).catch(err => {
-          this.pvuvLoading = false
-          console.log(err.message)
-        })
-      },
-      handleClick(tab, event) {
-        if (tab.name === 'first') {
-          this.$refs.countTo1.start()
-          this.$refs.countTo2.start()
-          this.$refs.countTo3.start()
-        } else if (tab.name === 'second') {
-          this.min_price = this.minPrice
-          this.max_price = this.maxPrice
-        } else if (tab.name === 'flopRecord') {
-          this.getRecord()
-        } else if (tab.name === 'winningRecord') {
-          this.getCore()
-        } else if (tab.name === 'btnReportDaily') {
-          this.getDictTree()
-          this.init()
-        } else if (tab.name === 'clockCard') {
-          number(this.$route.query.actCode).then(res => {
-            console.log('number', res)
-            this.groupNumberStart = res.dataMap.groupNumber - 200
-            this.groupNumberEnd = res.dataMap.groupNumber
-            this.extraNumberStart = 0
-            this.extraNumberEnd = res.dataMap.extraNumber
-            this.totalNumberStart = res.dataMap.groupNumber - 200
-            this.totalNumberEnd = res.dataMap.totalNumber
-            // this.chartPVUVData.rows = []
-          }).catch(err => {
-            console.log(err.response.data.message)
-          })
-          this.getClockCardData()
-        }
-      },
-      getRecord() {
-        this.flopLoading = true
-        var obj = {
-          type: 'lucky',
-          source: this.$route.query.actCode,
-          startTime: this.formInline ? dateFormat(this.formInline[0], 'yyyy-MM-dd') + ' 00:00:00' : '',
-          endTime: this.formInline ? dateFormat(this.formInline[1], 'yyyy-MM-dd') + ' 23:59:59' : ''
-        }
-        analysisFlopData(obj).then(res => {
-          console.log('抽奖数据', res)
-          this.flopLoading = false
-          this.tableData = res.dataMap.flopvo
-          this.chartData.rows = []
-          res.dataMap.flopvo.forEach((item, index, array) => {
-            if (index !== 0) {
-              this.chartData.rows.push(item)
-            }
-          })
-        }).catch(err => {
-          this.flopLoading = false
-          console.log(err.response.data.message)
-        })
-      },
-      getClockCardData: function() {
-        this.groupLoading = true
-        groupCount(this.$route.query.actCode).then(res => {
-          console.log('团打卡', res)
-          this.groupLoading = false
-          this.clockCardTableData = res.dataMap.hashmap
-        }).catch(err => {
-          this.groupLoading = false
-          console.log(err.response.data.message)
-        })
-      },
-      getCore() {
-        var obj = {
-          type: 'lucky',
-          source: this.$route.query.actCode,
-          province: this.form.province,
-          city: this.form.city,
-          // region:'',
-          mallName: this.form.omsCode,
-          mallFlag: this.form.mallFlag,
-          mobile: this.form.mobile,
-          grade: this.form.grade,
-          startTime: this.form.time ? dateFormat(this.form.time[0], 'yyyy-MM-dd') + ' 00:00:00' : '',
-          endTime: this.form.time ? dateFormat(this.form.time[1], 'yyyy-MM-dd') + ' 23:59:59' : ''
-        }
-        this.gradeOptions = []
-        this.luckyLoading = true
-        analysisLuckyData(obj).then(res => {
-          console.log('中奖记录', res)
-          this.tableData1 = res.dataMap.luckydata.list
-          this.luckyLoading = false
-          res.dataMap.luckydata.gradeMap.forEach((v, index) => {
-            var obj = {}
-            obj.value = index + 1
-            obj.label = v
-            this.gradeOptions.push(obj)
-          })
-        }).catch(err => {
-          this.luckyLoading = false
-          console.log(err.response.data.message)
-        })
-      },
-      setSubmit() {
-        this.getCore()
-      },
-      changePrice() {
-        this.min_price = this.minPrice
-        this.max_price = this.maxPrice
-      },
-      getDictTree() {
-        getDictTree().then(res => {
-          this.dictTree = []
-          this.dictTree = res
-          // this.dictTree.push(dictList)
-        })
-      },
-      dictSelect(node, instanceId) {
-        let dictIdStr = ''
-        node.forEach(v => {
-          dictIdStr += v + ','
-        })
-        this.params['dictIdStr'] = dictIdStr
-        console.log('选中了', this.params['dictIdStr'])
-      },
-      dictDateChange() {
-        this.params['dataDateStart'] = this.dictDate ? dateFormat(this.dictDate[0], 'yyyy-MM-dd') + ' 00:00:00' : ''
-        this.params['dataDateEnd'] = this.dictDate ? dateFormat(this.dictDate[1], 'yyyy-MM-dd') + ' 23:59:59' : ''
       }
     }
+    return {
+      subMenu: 'pvuv',
+      formPVUVInline: [],
+      chartPVUVData: {
+        columns: ['date', 'pv', 'uv'],
+        rows: []
+      },
+      chartSettings: {
+        labelMap: {
+          totalNum: '参与人次',
+          peopleNum: '去重人数',
+          luckyNum: '中奖人次'
+        },
+        area: true
+      },
+      tablePVUVData: [],
+      groupNumberStart: 0,
+      groupNumberEnd: 0,
+      extraNumberStart: 0,
+      extraNumberEnd: 0,
+      totalNumberStart: 0,
+      totalNumberEnd: 0,
+      peopleNum: '',
+      dictTree: [],
+      clockCardTableData: [],
+      formInline: [],
+      chartData: {
+        columns: ['date', 'totalNum', 'peopleNum', 'luckyNum'],
+        rows: []
+      },
+      tableData: [],
+      tableData1: [],
+      form: {
+        province: '',
+        city: '',
+        omsCode: '',
+        mallFlag: '',
+        grade: null,
+        mobile: '',
+        time: []
+      },
+      groupLoading: false,
+      pvuvLoading: false,
+      dictDate: [],
+      numberLoading: false,
+      flopLoading: false,
+      luckyLoading: false,
+      ticketLoading: false,
+      btnDailyLoading: false,
+      gradeOptions: [],
+      mallFlagOptions: [{
+        value: 'true',
+        label: '是'
+      }, {
+        value: 'false',
+        label: '否'
+      }],
+      minPrice: 2000,
+      maxPrice: 9000,
+      lowMinNumber: 5,
+      lowMaxNumber: 9,
+      midMinNumber: 2,
+      midMaxNumber: 5,
+      highMinNumber: 1,
+      highMaxNumber: 3,
+      min_price: this.minPrice,
+      max_price: this.maxPrice,
+      query: {},
+      loading: false
+    }
+  },
+  created() {
+
+  },
+  mounted: function() {
+    var now = new Date()
+    var end = new Date(now.getTime() + 3600 * 1000 * 24)
+    this.formPVUVInline.push(now)
+    this.formPVUVInline.push(end)
+    this.formInline.push(now)
+    this.formInline.push(end)
+    this.form.time.push(now)
+    this.form.time.push(end)
+    this.dictDate.push(now)
+    this.dictDate.push(end)
+    this.params['dataDateStart'] = this.dictDate ? dateFormat(this.dictDate[0], 'yyyy-MM-dd') + ' 00:00:00' : ''
+    this.params['dataDateEnd'] = this.dictDate ? dateFormat(this.dictDate[1], 'yyyy-MM-dd') + ' 23:59:59' : ''
+    // this.getRecord()
+  },
+  methods: {
+    dateFormat,
+    checkPermission,
+    beforeInit() {
+      this.url = 'api/btnDaily'
+      const sort = 'id,desc'
+      this.params['current'] = this.page + 1
+      this.params['size'] = this.size
+      this.params['sort'] = sort
+      this.params['source'] = this.$route.query.actCode
+      return true
+    },
+    onPVUVSubmit() {
+      this.getPVUVRecord(false)
+    },
+    onPVUVActualSubmit() {
+      this.getPVUVRecord(true)
+    },
+    changePeopleNum() {
+      this.numberLoading = true
+      addGroupNumber(this.$route.query.actCode, this.peopleNum).then(res => {
+        console.log('增加参团人数', res)
+        this.$message({
+          message: '恭喜你，更新成功',
+          type: 'success'
+        })
+        this.numberLoading = false
+        this.extraNumberStart = this.extraNumberEnd
+        this.totalNumberStart = this.totalNumberEnd
+        this.extraNumberEnd = this.extraNumberEnd + parseInt(this.peopleNum)
+        this.totalNumberEnd = parseInt(this.groupNumberEnd) + parseInt(this.extraNumberEnd)
+        this.$refs.countTo2.start()
+        this.$refs.countTo3.start()
+      }).catch(err => {
+        this.numberLoading = false
+        console.log(err.response.data.message)
+      })
+    },
+    addTicket() {
+      var minPrice = this.minPrice
+      var maxPrice = this.maxPrice
+      var lowMinNumber = this.lowMinNumber
+      var lowMaxNumber = this.lowMaxNumber
+      var midMinNumber = this.midMinNumber
+      var midMaxNumber = this.midMaxNumber
+      var highMinNumber = this.highMinNumber
+      var highMaxNumber = this.highMaxNumber
+      if (parseInt(minPrice) >= parseInt(maxPrice)) {
+        this.$message({
+          message: '请输入正确的价格区间，最小价格不能比最高价格高。',
+          type: 'error'
+        })
+        return
+      }
+      if (parseInt(lowMinNumber) > parseInt(lowMaxNumber) || parseInt(midMinNumber) > parseInt(midMaxNumber) || parseInt(highMinNumber) > parseInt(highMaxNumber)) {
+        this.$message({
+          message: '请输入正确的增长区间，前面的不能比后面的大。',
+          type: 'error'
+        })
+        return
+      }
+      var obj = {
+        minPrice: minPrice,
+        maxPrice: maxPrice,
+        lowMinNumber: lowMinNumber,
+        lowMaxNumber: lowMaxNumber,
+        midMinNumber: midMinNumber,
+        midMaxNumber: midMaxNumber,
+        highMinNumber: highMinNumber,
+        highMaxNumber: highMaxNumber
+      }
+      this.ticketLoading = true
+      addTicketNumber(this.$route.query.actCode, obj).then(res => {
+        this.ticketLoading = false
+        console.log('增加单品券人数', res)
+        this.$message({
+          message: '恭喜你，更新成功',
+          type: 'success'
+        })
+      }).catch(err => {
+        this.ticketLoading = false
+        console.log(err.message)
+      })
+    },
+    onSubmit() {
+      this.getRecord()
+    },
+    getPVUVRecord(flag) {
+      this.pvuvLoading = true
+      var obj = {
+        source: this.$route.query.actCode,
+        startTime: this.formPVUVInline ? dateFormat(this.formPVUVInline[0], 'yyyy-MM-dd') + ' 00:00:00' : '',
+        endTime: this.formPVUVInline ? dateFormat(this.formPVUVInline[1], 'yyyy-MM-dd') + ' 23:59:59' : '',
+        actualFlag: flag
+      }
+      analysisPVUVData(obj).then(res => {
+        this.pvuvLoading = false
+        console.log('pvuv', res)
+        if (res.dataMap.sourcepvuvvo) {
+          this.tablePVUVData = res.dataMap.sourcepvuvvo
+          this.chartPVUVData.rows = []
+          res.dataMap.sourcepvuvvo.forEach((item, index, array) => {
+            if (index > 1) {
+              this.chartPVUVData.rows.push(item)
+            }
+          })
+        } else {
+          this.tablePVUVData = []
+          this.chartPVUVData.rows = []
+        }
+      }).catch(err => {
+        this.pvuvLoading = false
+        console.log(err.message)
+      })
+    },
+    handleClick(tab, event) {
+      if (tab.name === 'first') {
+        this.$refs.countTo1.start()
+        this.$refs.countTo2.start()
+        this.$refs.countTo3.start()
+      } else if (tab.name === 'second') {
+        this.min_price = this.minPrice
+        this.max_price = this.maxPrice
+      } else if (tab.name === 'flopRecord') {
+        this.getRecord()
+      } else if (tab.name === 'winningRecord') {
+        this.getCore()
+      } else if (tab.name === 'btnReportDaily') {
+        this.getDictTree()
+        this.init()
+      } else if (tab.name === 'clockCard') {
+        number(this.$route.query.actCode).then(res => {
+          console.log('number', res)
+          this.groupNumberStart = res.dataMap.groupNumber - 200
+          this.groupNumberEnd = res.dataMap.groupNumber
+          this.extraNumberStart = 0
+          this.extraNumberEnd = res.dataMap.extraNumber
+          this.totalNumberStart = res.dataMap.groupNumber - 200
+          this.totalNumberEnd = res.dataMap.totalNumber
+          // this.chartPVUVData.rows = []
+        }).catch(err => {
+          console.log(err.response.data.message)
+        })
+        this.getClockCardData()
+      }
+    },
+    getRecord() {
+      this.flopLoading = true
+      var obj = {
+        type: 'lucky',
+        source: this.$route.query.actCode,
+        startTime: this.formInline ? dateFormat(this.formInline[0], 'yyyy-MM-dd') + ' 00:00:00' : '',
+        endTime: this.formInline ? dateFormat(this.formInline[1], 'yyyy-MM-dd') + ' 23:59:59' : ''
+      }
+      analysisFlopData(obj).then(res => {
+        console.log('抽奖数据', res)
+        this.flopLoading = false
+        this.tableData = res.dataMap.flopvo
+        this.chartData.rows = []
+        res.dataMap.flopvo.forEach((item, index, array) => {
+          if (index !== 0) {
+            this.chartData.rows.push(item)
+          }
+        })
+      }).catch(err => {
+        this.flopLoading = false
+        console.log(err.response.data.message)
+      })
+    },
+    getClockCardData: function() {
+      this.groupLoading = true
+      groupCount(this.$route.query.actCode).then(res => {
+        console.log('团打卡', res)
+        this.groupLoading = false
+        this.clockCardTableData = res.dataMap.hashmap
+      }).catch(err => {
+        this.groupLoading = false
+        console.log(err.response.data.message)
+      })
+    },
+    getCore() {
+      var obj = {
+        type: 'lucky',
+        source: this.$route.query.actCode,
+        province: this.form.province,
+        city: this.form.city,
+        // region:'',
+        mallName: this.form.omsCode,
+        mallFlag: this.form.mallFlag,
+        mobile: this.form.mobile,
+        grade: this.form.grade,
+        startTime: this.form.time ? dateFormat(this.form.time[0], 'yyyy-MM-dd') + ' 00:00:00' : '',
+        endTime: this.form.time ? dateFormat(this.form.time[1], 'yyyy-MM-dd') + ' 23:59:59' : ''
+      }
+      this.gradeOptions = []
+      this.luckyLoading = true
+      analysisLuckyData(obj).then(res => {
+        console.log('中奖记录', res)
+        this.tableData1 = res.dataMap.luckydata.list
+        this.luckyLoading = false
+        res.dataMap.luckydata.gradeMap.forEach((v, index) => {
+          var obj = {}
+          obj.value = index + 1
+          obj.label = v
+          this.gradeOptions.push(obj)
+        })
+      }).catch(err => {
+        this.luckyLoading = false
+        console.log(err.response.data.message)
+      })
+    },
+    setSubmit() {
+      this.getCore()
+    },
+    changePrice() {
+      this.min_price = this.minPrice
+      this.max_price = this.maxPrice
+    },
+    getDictTree() {
+      getDictTree().then(res => {
+        this.dictTree = []
+        this.dictTree = res
+        // this.dictTree.push(dictList)
+      })
+    },
+    dictSelect(node, instanceId) {
+      let dictIdStr = ''
+      node.forEach(v => {
+        dictIdStr += v + ','
+      })
+      this.params['dictIdStr'] = dictIdStr
+      console.log('选中了', this.params['dictIdStr'])
+    },
+    dictDateChange() {
+      this.params['dataDateStart'] = this.dictDate ? dateFormat(this.dictDate[0], 'yyyy-MM-dd') + ' 00:00:00' : ''
+      this.params['dataDateEnd'] = this.dictDate ? dateFormat(this.dictDate[1], 'yyyy-MM-dd') + ' 23:59:59' : ''
+    }
   }
+}
 </script>
 
 <style scoped>
