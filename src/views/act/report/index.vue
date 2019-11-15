@@ -261,39 +261,91 @@
             <el-table-column prop="gradeName" label="奖品"/>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane v-loading="signUpLoading" v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_SIGN_UP'])" label="留资记录" name="winningRecord">
-        <el-form
-              ref=""
+        <!--<el-tab-pane v-loading="signUpLoading" v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_SIGN_UP'])" label="留资记录" name="winningRecord">
+          <el-form
+            ref=""
+            :inline="true"
+            label-width="80px"
+            size="small"
+            class="demo-form-inline">
+            <div>
+              <el-form-item label="姓名">
+                <el-input v-model="form.province" placeholder="请输入姓名"/>
+              </el-form-item>
+              <el-form-item label="用户手机">
+                <el-input v-model="form.mobile" placeholder="请输入手机号"/>
+              </el-form-item>
+              <el-form-item label="商场">
+                <el-input v-model="form.omsCode" placeholder="请输入商场"/>
+              </el-form-item>
+              <el-form-item label="留资分会场/页面">
+                <el-input v-model="form.omsCode" placeholder="请选择分会场/页面"/>
+              </el-form-item>
+            </div>
+            <el-form-item label="选择时间">
+              <el-date-picker
+                type="datetimerange"
+                size="small"
+                range-separator="至"
+                start-placeholder="开始时间"
+                end-placeholder="结束时间"/>
+            </el-form-item>
+            <el-form-item>
+              <el-button v-permission="['ADMIN','REPORT_ALL','REPORT_DRAW_ANALYSIS_LUCKY']" type="success" size="mini" icon="el-icon-search" @click="setSubmit">查询</el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>-->
+        <el-tab-pane v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_BTN_DAILY'])" label="按钮点击记录" name="btnReportDaily">
+          <div class="froms">
+            <el-form
+              ref="form"
               :inline="true"
               label-width="80px"
               size="small"
               class="demo-form-inline">
               <div>
-                <el-form-item label="姓名">
-                  <el-input v-model="form.province" placeholder="请输入姓名"/>
+                <el-form-item label="模块">
+                  <treeselect :show-count="true" :options="dictTree" :multiple="true" search-nested style="width: 560px;" placeholder="选择模块" @input="dictSelect" />
                 </el-form-item>
-                <el-form-item label="用户手机">
-                  <el-input v-model="form.mobile" placeholder="请输入手机号"/>
+                <!--</div>-->
+                <!--<div>-->
+                <el-form-item label="选择日期">
+                  <el-date-picker
+                    v-model="dictDate"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    format="yyyy-MM-dd"
+                    @change="dictDateChange"/>
                 </el-form-item>
-                <el-form-item label="商场">
-                  <el-input v-model="form.omsCode" placeholder="请输入商场"/>
+                <el-form-item>
+                  <el-button v-permission="['ADMIN','MALL_ALL','MALL_LIST']" class="filter-item" size="mini" type="success" icon="el-icon-search" @click="toQuery">搜索</el-button>
                 </el-form-item>
-                <el-form-item label="留资分会场/页面">
-                  <el-input v-model="form.omsCode" placeholder="请选择分会场/页面"/>
-                </el-form-item>
-              </div>
-              <el-form-item label="选择时间">
-                <el-date-picker
-                  type="datetimerange"
-                  size="small"
-                  range-separator="至"
-                  start-placeholder="开始时间"
-                  end-placeholder="结束时间"/>
-              </el-form-item>
-              <el-form-item>
-                <el-button v-permission="['ADMIN','REPORT_ALL','REPORT_DRAW_ANALYSIS_LUCKY']" type="success" size="mini" icon="el-icon-search" @click="setSubmit">查询</el-button>
-              </el-form-item>
-            </el-form>
+            </div></el-form>
+          </div>
+          <el-table v-loading="loading" :data="data" style="width: 100%">
+            <el-table-column
+              type="index"/>
+            <el-table-column prop="id" label="编号"/>
+            <el-table-column prop="ext1" label="父模块"/>
+            <el-table-column prop="dictLabel" label="模块"/>
+            <el-table-column prop="dataDate" label="日期">
+              <template slot-scope="scope">
+                <span>{{ dateFormat(new Date(scope.row.dataDate), 'yyyy年MM月dd日') }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="pv" label="pv"/>
+            <el-table-column prop="uv" label="uv"/>
+          </el-table>
+          <!--分页组件-->
+          <el-pagination
+            :total="total"
+            :current-page="page + 1"
+            style="margin-top: 8px;"
+            layout="total, prev, pager, next, sizes"
+            @size-change="sizeChange"
+            @current-change="pageChange"/>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -302,12 +354,16 @@
 
 <script>
 import checkPermission from '@/utils/permission'
-import { analysisPVUVData, number, analysisFlopData, groupCount, analysisLuckyData, addGroupNumber, addTicketNumber } from '@/api/report'
+import { analysisPVUVData, number, analysisFlopData, groupCount, analysisLuckyData, addGroupNumber, addTicketNumber, getDictTree } from '@/api/report'
 import countTo from 'vue-count-to'
 import { dateFormat } from '@/utils/formatDate'
+import initData from '@/mixins/initData'
+import Treeselect from '@riophae/vue-treeselect'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 export default {
-  components: { countTo },
+  components: { countTo, Treeselect },
+  mixins: [initData],
   data: function() {
     this.extend = {
       series: {
@@ -341,6 +397,7 @@ export default {
       totalNumberStart: 0,
       totalNumberEnd: 0,
       peopleNum: '',
+      dictTree: [],
       clockCardTableData: [],
       formInline: [],
       chartData: {
@@ -360,10 +417,12 @@ export default {
       },
       groupLoading: false,
       pvuvLoading: false,
+      dictDate: [],
       numberLoading: false,
       flopLoading: false,
       luckyLoading: false,
       ticketLoading: false,
+      btnDailyLoading: false,
       gradeOptions: [],
       mallFlagOptions: [{
         value: 'true',
@@ -381,7 +440,9 @@ export default {
       highMinNumber: 1,
       highMaxNumber: 3,
       min_price: this.minPrice,
-      max_price: this.maxPrice
+      max_price: this.maxPrice,
+      query: {},
+      loading: false
     }
   },
   created() {
@@ -396,10 +457,24 @@ export default {
     this.formInline.push(end)
     this.form.time.push(now)
     this.form.time.push(end)
+    this.dictDate.push(now)
+    this.dictDate.push(end)
+    this.params['dataDateStart'] = this.dictDate ? dateFormat(this.dictDate[0], 'yyyy-MM-dd') + ' 00:00:00' : ''
+    this.params['dataDateEnd'] = this.dictDate ? dateFormat(this.dictDate[1], 'yyyy-MM-dd') + ' 23:59:59' : ''
     // this.getRecord()
   },
   methods: {
+    dateFormat,
     checkPermission,
+    beforeInit() {
+      this.url = 'api/btnDaily'
+      const sort = 'id,desc'
+      this.params['current'] = this.page + 1
+      this.params['size'] = this.size
+      this.params['sort'] = sort
+      this.params['source'] = this.$route.query.actCode
+      return true
+    },
     onPVUVSubmit() {
       this.getPVUVRecord(false)
     },
@@ -515,6 +590,9 @@ export default {
         this.getRecord()
       } else if (tab.name === 'winningRecord') {
         this.getCore()
+      } else if (tab.name === 'btnReportDaily') {
+        this.getDictTree()
+        this.init()
       } else if (tab.name === 'clockCard') {
         number(this.$route.query.actCode).then(res => {
           console.log('number', res)
@@ -602,6 +680,25 @@ export default {
     changePrice() {
       this.min_price = this.minPrice
       this.max_price = this.maxPrice
+    },
+    getDictTree() {
+      getDictTree().then(res => {
+        this.dictTree = []
+        this.dictTree = res
+        // this.dictTree.push(dictList)
+      })
+    },
+    dictSelect(node, instanceId) {
+      let dictIdStr = ''
+      node.forEach(v => {
+        dictIdStr += v + ','
+      })
+      this.params['dictIdStr'] = dictIdStr
+      console.log('选中了', this.params['dictIdStr'])
+    },
+    dictDateChange() {
+      this.params['dataDateStart'] = this.dictDate ? dateFormat(this.dictDate[0], 'yyyy-MM-dd') + ' 00:00:00' : ''
+      this.params['dataDateEnd'] = this.dictDate ? dateFormat(this.dictDate[1], 'yyyy-MM-dd') + ' 23:59:59' : ''
     }
   }
 }

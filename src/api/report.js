@@ -53,3 +53,19 @@ export function addTicketNumber(source, data) {
   })
 }
 
+export function getBtnDailyReport(params) {
+  return request({
+    url: 'api/btnDaily',
+    method: 'get',
+    params: params
+  })
+}
+
+// 获取字典
+export function getDictTree() {
+  return request({
+    url: 'api/report/dict/tree',
+    method: 'get'
+  })
+}
+
