@@ -102,7 +102,7 @@
           <el-switch v-model="scope.row.isJoin" active-color="#13ce66" inactive-color="#ff4949" @change="changeIsJoin(scope.row)" />
         </template>
       </el-table-column>
-      <el-table-column label="操作">
+      <!--<el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
             v-permission="['ADMIN','ACT_MALL_ALL','ACT_MALL_REFRESH_ACT']"
@@ -111,7 +111,7 @@
             @click="refresh(scope.row)"
           >刷新</el-button>
         </template>
-      </el-table-column>
+      </el-table-column>-->
     </el-table>
     <!--    广告位   -->
     <el-table v-loading="linkLoading" v-if="innerShow==2" :data="linkData" style="width: 100%">
