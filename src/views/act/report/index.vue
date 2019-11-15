@@ -52,7 +52,7 @@
                   size="mini"
                   @click="onPVUVActualSubmit"
                 >
-                  <svg-icon icon-class="real" />&nbsp;实时查询</el-button>
+                <svg-icon icon-class="real" />&nbsp;实时查询</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -517,8 +517,7 @@
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
-                  >
-                  </el-option>
+                  />
                 </el-select>
               </el-form-item>
               <el-form-item label="环境">
@@ -531,8 +530,7 @@
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
-                  >
-                  </el-option>
+                  />
                 </el-select>
               </el-form-item>
               <el-form-item label="scene">
@@ -570,65 +568,53 @@
             <el-table-column
               type="index"
               width="50"
-            >
-            </el-table-column>
+            />
             <el-table-column
               prop="name"
               label="名字"
               width="180"
-            >
-            </el-table-column>
+            />
             <el-table-column
               prop="mobile"
               label="手机号"
               width="180"
-            >
-            </el-table-column>
+            />
             <el-table-column
               prop="province"
               label="省份"
-            >
-            </el-table-column>
+            />
             <el-table-column
               prop="city"
               label="城市"
-            >
-            </el-table-column>
+            />
             <el-table-column
               prop="mallName"
               label="商场"
-            >
-            </el-table-column>
+            />
             <el-table-column
               prop="type"
               label="留资页面"
-            >
-            </el-table-column>
+            />
             <el-table-column
               prop="updateTime"
               label="留资时间"
-            >
-            </el-table-column>
+            />
             <el-table-column
               prop="cliType"
               label="环境"
-            >
-            </el-table-column>
+            />
             <el-table-column
               prop="scene"
               label="scene"
-            >
-            </el-table-column>
+            />
             <el-table-column
               prop="fromOpenId"
               label="分享人OpenId"
-            >
-            </el-table-column>
+            />
             <el-table-column
               prop="fromUnionId"
               label="分享人UnionId"
-            >
-            </el-table-column>
+            />
           </el-table>
         </el-tab-pane>
         <el-tab-pane v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_BTN_DAILY'])" label="按钮点击记录" name="btnReportDaily">
@@ -658,7 +644,7 @@
                 <el-form-item>
                   <el-button v-permission="['ADMIN','MALL_ALL','MALL_LIST']" class="filter-item" size="mini" type="success" icon="el-icon-search" @click="toQuery">搜索</el-button>
                 </el-form-item>
-              </div></el-form>
+            </div></el-form>
           </div>
           <el-table v-loading="loading" :data="data" style="width: 100%">
             <el-table-column
@@ -705,7 +691,7 @@ import { dateFormat } from '@/utils/formatDate'
 import initData from '@/mixins/initData'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-import { cliType, cliTypeOptions } from '@/utils/Enums'
+import { cliTypeOptions } from '@/utils/Enums'
 
 export default {
   components: { countTo, Treeselect },
@@ -799,7 +785,7 @@ export default {
         type: '',
         time: [],
         cliType: null,
-        scene:''
+        scene: ''
       },
       signUpTableData: [],
       cliType_Options: cliTypeOptions,
