@@ -1,16 +1,16 @@
 /**
  * 设置获取各种常用枚举值
  */
-export let cliTypeStr = {
-  1: "微信内",
-  2: "小程序",
-  3: "微信外H5"
+export const cliTypeStr = {
+  1: '微信内',
+  2: '小程序',
+  3: '微信外H5'
 }
 
-export let cliTypeOptions = [
+export const cliTypeOptions = [
   {
-    value:null,
-    label:'全部环境'
+    value: null,
+    label: '全部环境'
   },
   {
     value: 1,
@@ -24,4 +24,4 @@ export let cliTypeOptions = [
     value: 3,
     label: '微信外H5'
   }
-];
+]

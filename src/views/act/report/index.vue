@@ -52,7 +52,8 @@
                   size="mini"
                   @click="onPVUVActualSubmit"
                 >
-                  <svg-icon icon-class="real" />&nbsp;实时查询</el-button>
+                  <svg-icon icon-class="real" />&nbsp;实时查询
+                </el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -593,7 +594,7 @@
               width="150"
             >
               <template slot-scope="scope">
-                {{cliTypeStr[scope.row.cliType]}}
+                {{ cliTypeStr[scope.row.cliType] }}
               </template>
             </el-table-column>
             <el-table-column
@@ -616,8 +617,8 @@
               label="留资时间"
               width="150"
             >
-            <template slot-scope="scope">
-                {{ dateFormat(new Date(scope.row.updateTime),'yyyy-MM-dd HH:mm:ss')}}
+              <template slot-scope="scope">
+                {{ dateFormat(new Date(scope.row.updateTime),'yyyy-MM-dd HH:mm:ss') }}
               </template>
             </el-table-column>
           </el-table>
@@ -1175,7 +1176,7 @@ export default {
           this.signUpLoading = false
           this.signUpTypeOptions = res.types
         })
-        .catch(res => {
+        .catch(err => {
           this.signUpLoading = false
           console.log(err.response.data.message)
         })

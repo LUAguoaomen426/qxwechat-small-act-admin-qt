@@ -3,27 +3,39 @@ import { initData } from '@/api/data'
 export default {
   data() {
     return {
-      loading: true, data: [], page: 0, size: 10, total: 0, url: '', params: {}, query: {}, time: 170, isAdd: false,skipInitFlag:false
+      loading: true,
+      data: [],
+      page: 0,
+      size: 10,
+      total: 0,
+      url: '',
+      params: {},
+      query: {},
+      time: 170,
+      isAdd: false,
+      skipInitFlag: false
     }
   },
   methods: {
     async init() {
-      if (!this.skipInitFlag && !await this.beforeInit()) {
+      if (!this.skipInitFlag && !(await this.beforeInit())) {
         return
       }
       return new Promise((resolve, reject) => {
         this.loading = true
-        initData(this.url, this.params).then(res => {
-          this.total = res.totalElements
-          this.data = res.content
-          setTimeout(() => {
+        initData(this.url, this.params)
+          .then(res => {
+            this.total = res.totalElements
+            this.data = res.content
+            setTimeout(() => {
+              this.loading = false
+            }, this.time)
+            resolve(res)
+          })
+          .catch(err => {
             this.loading = false
-          }, this.time)
-          resolve(res)
-        }).catch(err => {
-          this.loading = false
-          reject(err)
-        })
+            reject(err)
+          })
       })
     },
     beforeInit() {
