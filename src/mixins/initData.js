@@ -3,12 +3,12 @@ import { initData } from '@/api/data'
 export default {
   data() {
     return {
-      loading: true, data: [], page: 0, size: 10, total: 0, url: '', params: {}, query: {}, time: 170, isAdd: false
+      loading: true, data: [], page: 0, size: 10, total: 0, url: '', params: {}, query: {}, time: 170, isAdd: false,skipInitFlag:false
     }
   },
   methods: {
     async init() {
-      if (!await this.beforeInit()) {
+      if (!this.skipInitFlag && !await this.beforeInit()) {
         return
       }
       return new Promise((resolve, reject) => {
@@ -31,11 +31,14 @@ export default {
     },
     pageChange(e) {
       this.page = e - 1
+      this.params['current'] = e
       this.init()
     },
     sizeChange(e) {
       this.page = 0
       this.size = e
+      this.params['current'] = 1
+      this.params['size'] = e
       this.init()
     },
     // 预防删除第二页最后一条数据时，或者多选删除第二页的数据时，页码错误导致请求无数据

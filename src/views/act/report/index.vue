@@ -52,7 +52,7 @@
                   size="mini"
                   @click="onPVUVActualSubmit"
                 >
-                <svg-icon icon-class="real" />&nbsp;实时查询</el-button>
+                  <svg-icon icon-class="real" />&nbsp;实时查询</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -488,61 +488,59 @@
             size="small"
             class="demo-form-inline"
           >
-            <div>
-              <el-form-item label="姓名">
-                <el-input
-                  v-model="signUpForm.name"
-                  placeholder="请输入姓名"
+            <el-form-item label="姓名">
+              <el-input
+                v-model="signUpForm.name"
+                placeholder="请输入姓名"
+              />
+            </el-form-item>
+            <el-form-item label="用户手机">
+              <el-input
+                v-model="signUpForm.mobile"
+                placeholder="请输入手机号"
+              />
+            </el-form-item>
+            <el-form-item label="商场">
+              <el-input
+                v-model="signUpForm.mallCondition"
+                placeholder="请输入商场"
+              />
+            </el-form-item>
+            <el-form-item label="留资页面">
+              <el-select
+                v-model="signUpForm.type"
+                placeholder="请选择 留资页面"
+              >
+                <el-option
+                  v-for="item in signUpTypeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
                 />
-              </el-form-item>
-              <el-form-item label="用户手机">
-                <el-input
-                  v-model="signUpForm.mobile"
-                  placeholder="请输入手机号"
+              </el-select>
+            </el-form-item>
+            <el-form-item label="环境">
+              <el-select
+                v-model="signUpForm.cliType"
+                placeholder="请选择环境"
+              >
+                <el-option
+                  v-for="item in cliTypeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
                 />
-              </el-form-item>
-              <el-form-item label="商场">
-                <el-input
-                  v-model="signUpForm.mallCondition"
-                  placeholder="请输入商场"
-                />
-              </el-form-item>
-              <el-form-item label="留资页面">
-                <el-select
-                  v-model="signUpForm.type"
-                  placeholder="请选择 留资页面"
-                >
-                  <el-option
-                    v-for="item in signUpTypeOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-              <el-form-item label="环境">
-                <el-select
-                  v-model="signUpForm.cliType"
-                  placeholder="请选择环境"
-                >
-                  <el-option
-                    v-for="item in cliType_Options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-              <el-form-item label="scene">
-                <el-input
-                  v-model="signUpForm.scene"
-                  placeholder="请输入scene"
-                />
-              </el-form-item>
-            </div>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="scene">
+              <el-input
+                v-model="signUpForm.scene"
+                placeholder="请输入scene"
+              />
+            </el-form-item>
             <el-form-item label="选择时间">
               <el-date-picker
-                v-model="signUpForm.time"
+                v-model="viewTime"
                 type="daterange"
                 size="small"
                 range-separator="至"
@@ -556,13 +554,13 @@
                 type="success"
                 size="mini"
                 icon="el-icon-search"
-                @click="setSubmit"
+                @click="toQuerySignUpData"
               >查询</el-button>
             </el-form-item>
           </el-form>
           <el-table
-            :data="signUpTableData"
-            height="250"
+            :data="data"
+            max-height="460"
             style="width: 100%"
           >
             <el-table-column
@@ -572,62 +570,85 @@
             <el-table-column
               prop="name"
               label="名字"
-              width="180"
+              width="150"
             />
             <el-table-column
               prop="mobile"
               label="手机号"
-              width="180"
-            />
-            <el-table-column
-              prop="province"
-              label="省份"
-            />
-            <el-table-column
-              prop="city"
-              label="城市"
+              width="150"
             />
             <el-table-column
               prop="mallName"
               label="商场"
+              width="150"
             />
             <el-table-column
               prop="type"
               label="留资页面"
+              width="150"
             />
             <el-table-column
               prop="updateTime"
               label="留资时间"
+              width="150"
             />
             <el-table-column
               prop="cliType"
               label="环境"
-            />
+              width="150"
+            ><template slot-scope="scope">
+              {{cliTypeStr[scope.row.cliType]}}
+              </template></el-table-column>
             <el-table-column
               prop="scene"
               label="scene"
+              width="150"
             />
             <el-table-column
               prop="fromOpenId"
               label="分享人OpenId"
+              width="180"
             />
             <el-table-column
               prop="fromUnionId"
               label="分享人UnionId"
+              width="180"
             />
           </el-table>
+          <!--分页组件-->
+          <el-pagination
+            :total="total"
+            :current-page="page + 1"
+            style="margin-top: 8px;"
+            layout="total, prev, pager, next, sizes"
+            @size-change="sizeChange"
+            @current-change="pageChange"
+          />
         </el-tab-pane>
-        <el-tab-pane v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_BTN_DAILY'])" label="按钮点击记录" name="btnReportDaily">
+        <el-tab-pane
+          v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_BTN_DAILY'])"
+          label="按钮点击记录"
+          name="btnReportDaily"
+        >
           <div class="froms">
             <el-form
               ref="form"
               :inline="true"
               label-width="80px"
               size="small"
-              class="demo-form-inline">
+              class="demo-form-inline"
+            >
               <div>
                 <el-form-item label="模块">
-                  <treeselect :show-count="true" :options="dictTree" :multiple="true" search-nested style="width: 560px;" placeholder="选择模块" @input="dictSelect" />
+                  <treeselect
+                    :show-count="true"
+                    :options="dictTree"
+                    :multiple="true"
+                    search-nested
+                    style="width: 560px;"
+                    placeholder="选择模块"
+                    @input="dictSelect"
+                  />
                 </el-form-item>
                 <!--</div>-->
                 <!--<div>-->
@@ -639,26 +660,56 @@
                     start-placeholder="开始日期"
                     end-placeholder="结束日期"
                     format="yyyy-MM-dd"
-                    @change="dictDateChange"/>
+                    @change="dictDateChange"
+                  />
                 </el-form-item>
                 <el-form-item>
-                  <el-button v-permission="['ADMIN','MALL_ALL','MALL_LIST']" class="filter-item" size="mini" type="success" icon="el-icon-search" @click="toQuery">搜索</el-button>
+                  <el-button
+                    v-permission="['ADMIN','MALL_ALL','MALL_LIST']"
+                    class="filter-item"
+                    size="mini"
+                    type="success"
+                    icon="el-icon-search"
+                    @click="toQuery"
+                  >搜索</el-button>
                 </el-form-item>
-            </div></el-form>
+              </div>
+            </el-form>
           </div>
-          <el-table v-loading="loading" :data="data" style="width: 100%">
+          <el-table
+            v-loading="loading"
+            :data="data"
+            style="width: 100%"
+          >
+            <el-table-column type="index" />
             <el-table-column
-              type="index"/>
-            <el-table-column prop="id" label="编号"/>
-            <el-table-column prop="ext1" label="父模块"/>
-            <el-table-column prop="dictLabel" label="模块"/>
-            <el-table-column prop="dataDate" label="日期">
+              prop="id"
+              label="编号"
+            />
+            <el-table-column
+              prop="ext1"
+              label="父模块"
+            />
+            <el-table-column
+              prop="dictLabel"
+              label="模块"
+            />
+            <el-table-column
+              prop="dataDate"
+              label="日期"
+            >
               <template slot-scope="scope">
                 <span>{{ dateFormat(new Date(scope.row.dataDate), 'yyyy年MM月dd日') }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="pv" label="pv"/>
-            <el-table-column prop="uv" label="uv"/>
+            <el-table-column
+              prop="pv"
+              label="pv"
+            />
+            <el-table-column
+              prop="uv"
+              label="uv"
+            />
           </el-table>
           <!--分页组件-->
           <el-pagination
@@ -667,7 +718,8 @@
             style="margin-top: 8px;"
             layout="total, prev, pager, next, sizes"
             @size-change="sizeChange"
-            @current-change="pageChange"/>
+            @current-change="pageChange"
+          />
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -684,14 +736,15 @@ import {
   analysisLuckyData,
   addGroupNumber,
   addTicketNumber,
-  getDictTree
+  getDictTree,
+  getSignUpFormParam
 } from '@/api/report'
 import countTo from 'vue-count-to'
 import { dateFormat } from '@/utils/formatDate'
 import initData from '@/mixins/initData'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-import { cliTypeOptions } from '@/utils/Enums'
+import { cliTypeOptions,cliTypeStr } from '@/utils/Enums'
 
 export default {
   components: { countTo, Treeselect },
@@ -779,18 +832,34 @@ export default {
       min_price: this.minPrice,
       max_price: this.maxPrice,
       signUpForm: {
-        name: '',
-        mobile: '',
-        mallCondition: '',
-        type: '',
-        time: [],
+        name: null,
+        mobile: null,
+        mallCondition: null,
+        type: null,
         cliType: null,
-        scene: ''
+        scene: null,
+        startTime: null,
+        endTime: null
       },
-      signUpTableData: [],
-      cliType_Options: cliTypeOptions,
+      cliTypeOptions: cliTypeOptions,
+      cliTypeStr:cliTypeStr,
       query: {},
-      loading: false
+      loading: false,
+      viewTime: []
+    }
+  },
+  computed: {
+    startTimeStr_ymd: function() {
+      return dateFormat(this.viewTime[0], 'yyyy-MM-dd') + ' 00:00:00'
+    },
+    endTimeStr_ymd: function() {
+      return dateFormat(this.viewTime[1], 'yyyy-MM-dd') + ' 23:59:59'
+    },
+    startTimeStr_Hms: function() {
+      return dateFormat(this.viewTime[0], 'yyyy-MM-dd HH:mm:ss')
+    },
+    endTimeStr_Hms: function() {
+      return dateFormat(this.viewTime[0], 'yyyy-MM-dd HH:mm:ss')
     }
   },
   created() {},
@@ -805,11 +874,12 @@ export default {
     this.form.time.push(end)
     this.dictDate.push(now)
     this.dictDate.push(end)
-    this.params['dataDateStart'] = this.dictDate ? dateFormat(this.dictDate[0], 'yyyy-MM-dd') + ' 00:00:00' : ''
-    this.params['dataDateEnd'] = this.dictDate ? dateFormat(this.dictDate[1], 'yyyy-MM-dd') + ' 23:59:59' : ''
-    this.signUpForm.time.push(now)
-    this.signUpForm.time.push(end)
-    // this.getRecord()
+    this.params['dataDateStart'] = this.dictDate
+      ? dateFormat(this.dictDate[0], 'yyyy-MM-dd') + ' 00:00:00'
+      : ''
+    this.params['dataDateEnd'] = this.dictDate
+      ? dateFormat(this.dictDate[1], 'yyyy-MM-dd') + ' 23:59:59'
+      : ''
   },
   methods: {
     dateFormat,
@@ -942,6 +1012,11 @@ export default {
         })
     },
     handleClick(tab, event) {
+      var now = new Date()
+      var end = new Date(now.getTime() + 3600 * 1000 * 24)
+      this.viewTime.push(now)
+      this.viewTime.push(end)
+
       if (tab.name === 'first') {
         this.$refs.countTo1.start()
         this.$refs.countTo2.start()
@@ -972,6 +1047,10 @@ export default {
             console.log(err.response.data.message)
           })
         this.getClockCardData()
+      } else if (tab.name === 'signUpRecord') {
+        this.page = 10
+        this.size = 10
+        this.initSignUpPane()
       }
     },
     getRecord() {
@@ -1076,8 +1155,34 @@ export default {
       console.log('选中了', this.params['dictIdStr'])
     },
     dictDateChange() {
-      this.params['dataDateStart'] = this.dictDate ? dateFormat(this.dictDate[0], 'yyyy-MM-dd') + ' 00:00:00' : ''
-      this.params['dataDateEnd'] = this.dictDate ? dateFormat(this.dictDate[1], 'yyyy-MM-dd') + ' 23:59:59' : ''
+      this.params['dataDateStart'] = this.dictDate
+        ? dateFormat(this.dictDate[0], 'yyyy-MM-dd') + ' 00:00:00'
+        : ''
+      this.params['dataDateEnd'] = this.dictDate
+        ? dateFormat(this.dictDate[1], 'yyyy-MM-dd') + ' 23:59:59'
+        : ''
+    },
+    initSignUpPane() {
+      this.signUpLoading = true
+      getSignUpFormParam(this.$route.query.actCode)
+        .then(res => {
+          this.signUpLoading = false
+          this.signUpTypeOptions = res.types
+        })
+        .catch(res => {
+          this.signUpLoading = false
+          console.log(err.response.data.message)
+        })
+    },
+    toQuerySignUpData() {
+      this.url = '/api/signUpData/' + this.$route.query.actCode
+      this.skipInitFlag = true
+      this.signUpForm.startTime = this.startTimeStr_ymd
+      this.signUpForm.endTime = this.endTimeStr_ymd
+      this.params = this.signUpForm
+      this.params['current'] = 1
+      this.params['size'] = this.size
+      this.toQuery()
     }
   }
 }
