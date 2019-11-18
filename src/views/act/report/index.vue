@@ -588,17 +588,14 @@
               width="150"
             />
             <el-table-column
-              prop="updateTime"
-              label="留资时间"
-              width="150"
-            />
-            <el-table-column
               prop="cliType"
               label="环境"
               width="150"
-            ><template slot-scope="scope">
-              {{cliTypeStr[scope.row.cliType]}}
-              </template></el-table-column>
+            >
+              <template slot-scope="scope">
+                {{cliTypeStr[scope.row.cliType]}}
+              </template>
+            </el-table-column>
             <el-table-column
               prop="scene"
               label="scene"
@@ -614,6 +611,15 @@
               label="分享人UnionId"
               width="180"
             />
+            <el-table-column
+              prop="updateTime"
+              label="留资时间"
+              width="150"
+            >
+              <template slot-scope="scope">
+                {{ dateFormat(new Date(scope.row.updateTime),'yyyy-MM-dd HH:mm:ss')}}
+              </template>
+            </el-table-column>
           </el-table>
           <!--分页组件-->
           <el-pagination
@@ -744,7 +750,7 @@ import { dateFormat } from '@/utils/formatDate'
 import initData from '@/mixins/initData'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-import { cliTypeOptions,cliTypeStr } from '@/utils/Enums'
+import { cliTypeOptions, cliTypeStr } from '@/utils/Enums'
 
 export default {
   components: { countTo, Treeselect },
@@ -842,7 +848,7 @@ export default {
         endTime: null
       },
       cliTypeOptions: cliTypeOptions,
-      cliTypeStr:cliTypeStr,
+      cliTypeStr: cliTypeStr,
       query: {},
       loading: false,
       viewTime: []
