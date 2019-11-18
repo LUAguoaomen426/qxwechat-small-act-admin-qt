@@ -616,7 +616,7 @@
               label="留资时间"
               width="150"
             >
-              <template slot-scope="scope">
+            <template slot-scope="scope">
                 {{ dateFormat(new Date(scope.row.updateTime),'yyyy-MM-dd HH:mm:ss')}}
               </template>
             </el-table-column>
