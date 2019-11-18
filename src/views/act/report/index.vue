@@ -551,7 +551,7 @@
             </el-form-item>
             <el-form-item>
               <el-button
-                v-permission="['ADMIN','REPORT_ALL','REPORT_DRAW_ANALYSIS_LUCKY']"
+                v-permission="['ADMIN','REPORT_ALL','REPORT_SIGN_UP']"
                 type="success"
                 size="mini"
                 icon="el-icon-search"
