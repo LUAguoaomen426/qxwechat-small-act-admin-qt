@@ -1182,7 +1182,7 @@ export default {
         })
     },
     toQuerySignUpData() {
-      this.url = '/api/signUpData/' + this.$route.query.actCode
+      this.url = 'api/signUpData/' + this.$route.query.actCode
       this.skipInitFlag = true
       this.signUpForm.startTime = this.startTimeStr_ymd
       this.signUpForm.endTime = this.endTimeStr_ymd

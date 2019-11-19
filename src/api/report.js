@@ -71,7 +71,7 @@ export function getDictTree() {
 
 export function getSignUpFormParam(source) {
   return request({
-    url: '/api/signUpFormParam/' + source,
+    url: 'api/signUpFormParam/' + source,
     method: 'get'
   })
 }
