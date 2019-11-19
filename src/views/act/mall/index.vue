@@ -44,7 +44,7 @@
           v-permission="['ADMIN','ACT_MALL_ALL','ACT_MALL_EXCEL_SYNC']"
           :limit="1"
           :show-file-list="false"
-          :action="'/act_admin_api/api/' + this.$route.query.actCode + '/mallInfo/upload'"
+          :action="'/act-admin-api/api/' + this.$route.query.actCode + '/mallInfo/upload'"
           :headers="myHeaders"
           :on-success="handleSuccess"
           :before-upload="handleBeforeUpload"
@@ -154,7 +154,7 @@
             :data="actSpeclinkUploadParam"
             :on-success="handleSecondSuccess"
             :before-upload="handleSecondBeforeUpload(scope.row)"
-            :action="'/act_admin_api/api/' + actCode + '/actSpeclink/upload'"
+            :action="'/act-admin-api/api/' + actCode + '/actSpeclink/upload'"
             class="filter-item"
             style="margin-bottom:auto;"
           >
