@@ -4,7 +4,7 @@
       <div class="page-container">
         <b>活动名称：</b>
         <el-button type="text">
-          <router-link :to="{path:'/act/actList'}">
+          <router-link :to="{ path: '/act/actList' }">
             {{ this.$route.query.actName }}
           </router-link>
         </el-button>
@@ -19,11 +19,23 @@
         mode="horizontal"
         @select="handleSelect"
       >
-        <el-menu-item v-permission="['ADMIN','ACT_SETTING','ACT_MALL_ALL']" index="1">商场</el-menu-item>
-        <el-menu-item v-permission="['ADMIN','ACT_SETTING','ACT_SPEC_ALL']" index="2">广告位</el-menu-item>
-        <el-menu-item v-permission="['ADMIN','ACT_SETTING','ACT_DRAW_ALL']" index="3">抽奖信息</el-menu-item>
+        <el-menu-item
+          v-permission="['ADMIN', 'ACT_SETTING', 'ACT_MALL_ALL']"
+          index="1"
+        >商场</el-menu-item>
+        <el-menu-item
+          v-permission="['ADMIN', 'ACT_SETTING', 'ACT_SPEC_ALL']"
+          index="2"
+        >广告位</el-menu-item>
+        <el-menu-item
+          v-permission="['ADMIN', 'ACT_SETTING', 'ACT_DRAW_ALL']"
+          index="3"
+        >抽奖信息</el-menu-item>
       </el-menu>
-      <div v-if="innerShow==1" style="display: inline-block;margin: 20px 2px;">
+      <div
+        v-if="innerShow == 1"
+        style="display: inline-block;margin: 20px 2px;"
+      >
         <el-input
           v-model="mallSearch"
           clearable
@@ -33,7 +45,7 @@
           class="filter-item"
         />
         <el-button
-          v-permission="['ADMIN','ACT_MALL_ALL','ACT_MALL_SELECT_ACT']"
+          v-permission="['ADMIN', 'ACT_MALL_ALL', 'ACT_MALL_SELECT_ACT']"
           class="filter-item"
           icon="el-icon-search"
           size="mini"
@@ -41,22 +53,31 @@
           @click="search"
         >搜索</el-button>
         <el-upload
-          v-permission="['ADMIN','ACT_MALL_ALL','ACT_MALL_EXCEL_SYNC']"
+          v-permission="['ADMIN', 'ACT_MALL_ALL', 'ACT_MALL_EXCEL_SYNC']"
           :limit="1"
           :show-file-list="false"
-          :action="'/act-admin-api/api/' + this.$route.query.actCode + '/mallInfo/upload'"
+          :action="
+            '/act-admin-api/api/' +
+              this.$route.query.actCode +
+              '/mallInfo/upload'
+          "
           :headers="myHeaders"
           :on-success="handleSuccess"
           :before-upload="handleBeforeUpload"
           class="filter-item"
           style="margin-bottom:auto;"
         >
-          <el-button class="filter-item" size="mini" icon="el-icon-upload" type="primary">点击上传</el-button>
+          <el-button
+            class="filter-item"
+            size="mini"
+            icon="el-icon-upload"
+            type="primary"
+          >点击上传</el-button>
         </el-upload>
         <!--<el-button  class="filter-item" size="mini" type="primary" icon="el-icon-upload" @click="updataE">上传-->
         <!--</el-button>-->
         <el-button
-          v-permission="['ADMIN','ACT_MALL_ALL','ACT_MALL_SAVE_ACT']"
+          v-permission="['ADMIN', 'ACT_MALL_ALL', 'ACT_MALL_SAVE_ACT']"
           class="filter-item"
           size="mini"
           type="primary"
@@ -64,9 +85,12 @@
           @click="keepE"
         >保存</el-button>
       </div>
-      <div v-if="innerShow==2" style="display: inline-block;margin: 20px 2px;">
+      <div
+        v-if="innerShow == 2"
+        style="display: inline-block;margin: 20px 2px;"
+      >
         <el-button
-          v-permission="['ADMIN','ACT_SPEC_ALL','ACT_SPEC_ADD']"
+          v-permission="['ADMIN', 'ACT_SPEC_ALL', 'ACT_SPEC_ADD']"
           class="filter-item"
           size="mini"
           type="primary"
@@ -74,9 +98,12 @@
           @click="addAdS"
         >新增</el-button>
       </div>
-      <div v-if="innerShow==3" style="display: inline-block;margin: 20px 2px;">
+      <div
+        v-if="innerShow == 3"
+        style="display: inline-block;margin: 20px 2px;"
+      >
         <el-button
-          v-permission="['ADMIN','ACT_DRAW_ALL','ACT_DRAW_INFO_SAVE']"
+          v-permission="['ADMIN', 'ACT_DRAW_ALL', 'ACT_DRAW_INFO_SAVE']"
           class="filter-item"
           size="mini"
           type="primary"
@@ -88,18 +115,42 @@
     <!--    商场   -->
     <el-table
       v-loading="loading"
-      v-if="innerShow==1"
+      v-if="innerShow == 1"
       key="tableData"
-      :data="newTableData">
+      :data="newTableData"
+    >
       <el-table-column type="index" />
-      <el-table-column prop="omsCode" label="omsCode" />
-      <el-table-column prop="mallCode" label="mallCode" />
-      <el-table-column prop="province" label="省" />
-      <el-table-column prop="city" label="城市" />
-      <el-table-column prop="mallName" label="商场" />
-      <el-table-column prop="isJoin" label="是否参加">
+      <el-table-column
+        prop="omsCode"
+        label="omsCode"
+      />
+      <el-table-column
+        prop="mallCode"
+        label="mallCode"
+      />
+      <el-table-column
+        prop="province"
+        label="省"
+      />
+      <el-table-column
+        prop="city"
+        label="城市"
+      />
+      <el-table-column
+        prop="mallName"
+        label="商场"
+      />
+      <el-table-column
+        prop="isJoin"
+        label="是否参加"
+      >
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.isJoin" active-color="#13ce66" inactive-color="#ff4949" @change="changeIsJoin(scope.row)" />
+          <el-switch
+            v-model="scope.row.isJoin"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            @change="changeIsJoin(scope.row)"
+          />
         </template>
       </el-table-column>
       <!--<el-table-column label="操作">
@@ -114,40 +165,65 @@
       </el-table-column>-->
     </el-table>
     <!--    广告位   -->
-    <el-table v-loading="linkLoading" v-if="innerShow==2" :data="linkData" style="width: 100%">
+    <el-table
+      v-loading="linkLoading"
+      v-if="innerShow == 2"
+      :data="linkData"
+      style="width: 100%"
+    >
       <el-table-column type="index" />
-      <el-table-column prop="name" label="名称" />
-      <el-table-column prop="type" label="类型">
-        <template slot-scope="scope">{{ scope.row.type === 1 ?'内部':'外部' }}</template>
+      <el-table-column
+        prop="name"
+        label="名称"
+      />
+      <el-table-column
+        prop="type"
+        label="类型"
+      >
+        <template slot-scope="scope">{{
+          scope.row.type === 1 ? "内部" : "外部"
+        }}</template>
       </el-table-column>
-      <el-table-column prop="specCode" label="编号" />
-      <el-table-column prop="url" label="url">
+      <el-table-column
+        prop="specCode"
+        label="编号"
+      />
+      <el-table-column
+        prop="url"
+        label="url"
+      >
         <template slot-scope="scope">
           {{ scope.row.url }}
           <copy v-model="scope.row.url" />
         </template>
       </el-table-column>
-      <el-table-column prop="showImage" label="图片">
+      <el-table-column
+        prop="showImage"
+        label="图片"
+      >
         <template slot-scope="scope">
-          <img :src="scope.row.showImage" style="height:60px;" >
+          <img
+            :src="scope.row.showImage"
+            style="height:60px;"
+          />
         </template>
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
-            v-permission="['ADMIN','ACT_SPEC_ALL','ACT_SPEC_UPDATE']"
+            v-permission="['ADMIN', 'ACT_SPEC_ALL', 'ACT_SPEC_UPDATE']"
             size="small"
             type="text"
             @click="changeAd(scope.row)"
           >修改</el-button>
           <el-button
-            v-permission="['ADMIN','ACT_SPEC_ALL','ACT_SPEC_DELETE']"
+            v-permission="['ADMIN', 'ACT_SPEC_ALL', 'ACT_SPEC_DELETE']"
             size="small"
             type="text"
             @click="deleteAd(scope.row)"
           >删除</el-button>
           <el-upload
-            v-permission="['ADMIN','ACT_SPEC_ALL','ACT_SPEC_UPLOAD']"
+            v-permission="['ADMIN', 'ACT_SPEC_ALL', 'ACT_SPEC_UPLOAD']"
             :limit="1"
             :show-file-list="false"
             :headers="myHeaders"
@@ -158,21 +234,40 @@
             class="filter-item"
             style="margin-bottom:auto;"
           >
-            <el-button v-if="scope.row.type==0" size="mini" type="text" @click="adUpload(scope.row)">上传</el-button>
+            <el-button
+              v-if="scope.row.type == 0"
+              size="mini"
+              type="text"
+              @click="adUpload(scope.row)"
+            >上传</el-button>
           </el-upload>
         </template>
       </el-table-column>
     </el-table>
     <!--    抽奖信息    -->
-    <el-table v-loading="darwLoading" v-if="innerShow==3" :data="luckDraw" style="width: 100%">
+    <el-table
+      v-loading="darwLoading"
+      v-if="innerShow == 3"
+      :data="luckDraw"
+      style="width: 100%"
+    >
       <el-table-column type="index" />
-      <el-table-column prop="drawId" label="标识" />
-      <el-table-column prop="startTime" label="开始时间">
+      <el-table-column
+        prop="drawId"
+        label="标识"
+      />
+      <el-table-column
+        prop="startTime"
+        label="开始时间"
+      >
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.startTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="endTime" label="结束时间">
+      <el-table-column
+        prop="endTime"
+        label="结束时间"
+      >
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.endTime) }}</span>
         </template>
@@ -180,13 +275,13 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
-            v-permission="['ADMIN','ACT_DRAW_ALL','ACT_DRAW_INFO_UPDATE']"
+            v-permission="['ADMIN', 'ACT_DRAW_ALL', 'ACT_DRAW_INFO_UPDATE']"
             size="small"
             type="text"
             @click="openDrawEditTable(scope.row.drawId)"
           >修改</el-button>
           <el-button
-            v-permission="['ADMIN','ACT_DRAW_ALL','ACT_DRAW_INFO_DELETE']"
+            v-permission="['ADMIN', 'ACT_DRAW_ALL', 'ACT_DRAW_INFO_DELETE']"
             size="small"
             type="text"
             @click="deleteDraw(scope.row.drawId)"
@@ -195,34 +290,79 @@
       </el-table-column>
     </el-table>
     <!-- 添加广告位开始 -->
-    <el-dialog :visible.sync="addAdShow" append-to-body title="新增" width="60%">
-      <el-form ref="addAdForm" :model="addAdForm" :rules="rules2" label-width="80px">
+    <el-dialog
+      :visible.sync="addAdShow"
+      append-to-body
+      title="新增"
+      width="60%"
+    >
+      <el-form
+        ref="addAdForm"
+        :model="addAdForm"
+        :rules="rules2"
+        label-width="80px"
+      >
         <el-row>
           <el-col :span="12">
-            <el-form-item label="名称" prop="name">
-              <el-input v-model="addAdForm.name" style="width: 200px" placeholder="请输入广告位名称" />
+            <el-form-item
+              label="名称"
+              prop="name"
+            >
+              <el-input
+                v-model="addAdForm.name"
+                style="width: 200px"
+                placeholder="请输入广告位名称"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="编号">
-              <el-input v-model="addAdForm.specCode" style="width: 200px" placeholder="请输入唯一编号" />
+              <el-input
+                v-model="addAdForm.specCode"
+                style="width: 200px"
+                placeholder="请输入唯一编号"
+              />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="类型">
-              <el-select v-model="addAdForm.type" placeholder="请选择" style="width: 200px">
-                <el-option key="0" label="外部" value="0" />
-                <el-option key="1" label="内部" value="1" />
+              <el-select
+                v-model="addAdForm.type"
+                placeholder="请选择"
+                style="width: 200px"
+              >
+                <el-option
+                  key="0"
+                  label="外部"
+                  value="0"
+                />
+                <el-option
+                  key="1"
+                  label="内部"
+                  value="1"
+                />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="限制时间">
-              <el-select v-model="addAdForm.haveTL" placeholder="请选择" style="width: 200px">
-                <el-option :key="addAdForm.haveTL" label="否" value="F" />
-                <el-option :key="addAdForm.haveTL" label="是" value="T" />
+              <el-select
+                v-model="addAdForm.haveTL"
+                placeholder="请选择"
+                style="width: 200px"
+              >
+                <el-option
+                  :key="addAdForm.haveTL"
+                  label="否"
+                  value="F"
+                />
+                <el-option
+                  :key="addAdForm.haveTL"
+                  label="是"
+                  value="T"
+                />
               </el-select>
             </el-form-item>
           </el-col>
@@ -243,7 +383,11 @@
         <el-row>
           <el-col :span="20">
             <el-form-item label="url">
-              <el-input v-model="addAdForm.url" style="width: 563px" placeholder="请输入链接地址" />
+              <el-input
+                v-model="addAdForm.url"
+                style="width: 563px"
+                placeholder="请输入链接地址"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -253,6 +397,7 @@
             v-model="addAdForm.showImage"
             :on-exceed="handleExceed"
             :on-success="uploadShowImage"
+            :on-remove="removeUploadImage"
             limit="1"
             class="upload-demo"
             action="https://wxxcx-api.chinaredstar.com/file/upload"
@@ -260,29 +405,71 @@
             list-type="picture"
             style="margin-bottom: 0;"
           >
-            <el-button size="small" type="primary">点击上传</el-button>
+            <el-button
+              size="small"
+              type="primary"
+            >点击上传</el-button>
           </el-upload>
         </el-form-item>
-        <el-row v-if="addAdForm.type ==1">
-          <el-form-item label="绑定活动" prop="bindActCode">
-            <el-select v-model="addAdForm.bindActCode" placeholder="请选择" style="width: 200px">
-              <el-option v-for="act in actList" :key="act.moduleName" :label="act.moduleName" :value="act.actCode" />
+        <el-row v-if="addAdForm.type == 1">
+          <el-form-item
+            label="绑定活动"
+            prop="bindActCode"
+          >
+            <el-select
+              v-model="addAdForm.bindActCode"
+              placeholder="请选择"
+              style="width: 200px"
+            >
+              <el-option
+                v-for="act in actList"
+                :key="act.moduleName"
+                :label="act.moduleName"
+                :value="act.actCode"
+              />
             </el-select>
           </el-form-item>
         </el-row>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="text" @click="cancelAddAd">取消</el-button>
-        <el-button :loading="btnLoading" type="primary" @click="sureAddAd">确认</el-button>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          type="text"
+          @click="cancelAddAd"
+        >取消</el-button>
+        <el-button
+          :loading="btnLoading"
+          type="primary"
+          @click="sureAddAd"
+        >确认</el-button>
       </div>
     </el-dialog>
     <!-- 特殊链接修改开始 -->
-    <el-dialog :visible.sync="shoppingListShow" append-to-body title="修改" width="60%">
-      <el-form ref="newChangeAd" :rules="rules" :model="newChangeAd" label-width="80px">
+    <el-dialog
+      :visible.sync="shoppingListShow"
+      append-to-body
+      title="修改"
+      width="60%"
+    >
+      <el-form
+        ref="newChangeAd"
+        :rules="rules"
+        :model="newChangeAd"
+        label-width="80px"
+      >
         <el-row>
           <el-col :span="12">
-            <el-form-item prop="name" label="名称">
-              <el-input v-model="newChangeAd.name" style="width: 200px" placeholder="请输入广告位名称" />
+            <el-form-item
+              prop="name"
+              label="名称"
+            >
+              <el-input
+                v-model="newChangeAd.name"
+                style="width: 200px"
+                placeholder="请输入广告位名称"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -299,17 +486,41 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="类型">
-              <el-select v-model="newChangeAd.type" placeholder="请选择" style="width: 200px">
-                <el-option key="0" :value="0" label="外部" />
-                <el-option key="1" :value="1" label="内部" />
+              <el-select
+                v-model="newChangeAd.type"
+                placeholder="请选择"
+                style="width: 200px"
+              >
+                <el-option
+                  key="0"
+                  :value="0"
+                  label="外部"
+                />
+                <el-option
+                  key="1"
+                  :value="1"
+                  label="内部"
+                />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="限制时间">
-              <el-select v-model="newChangeAd.haveTL" placeholder="请选择" style="width: 200px">
-                <el-option :key="newChangeAd.haveTL" label="否" value="F" />
-                <el-option :key="newChangeAd.haveTL" label="是" value="T" />
+              <el-select
+                v-model="newChangeAd.haveTL"
+                placeholder="请选择"
+                style="width: 200px"
+              >
+                <el-option
+                  :key="newChangeAd.haveTL"
+                  label="否"
+                  value="F"
+                />
+                <el-option
+                  :key="newChangeAd.haveTL"
+                  label="是"
+                  value="T"
+                />
               </el-select>
             </el-form-item>
           </el-col>
@@ -330,7 +541,11 @@
         <el-row>
           <el-col :span="20">
             <el-form-item label="url">
-              <el-input v-model="newChangeAd.url" style="width: 563px" placeholder="请输入链接地址" />
+              <el-input
+                v-model="newChangeAd.url"
+                style="width: 563px"
+                placeholder="请输入链接地址"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -341,6 +556,7 @@
             :file-list="newChangeAd.fileList"
             :on-exceed="handleExceed"
             :on-success="uploadShowImage"
+            :on-remove="removeUploadImage"
             :limit="1"
             :show-file-list="true"
             class="upload-demo"
@@ -348,17 +564,35 @@
             list-type="picture"
             style="margin-bottom: 0;"
           >
-            <el-button size="small" type="primary">点击上传</el-button>
+            <el-button
+              size="small"
+              type="primary"
+            >点击上传</el-button>
           </el-upload>
         </el-form-item>
-        <el-row v-if="newChangeAd.type ==1">
-          <el-form-item label="绑定活动" prop="bindActCode">
-            <el-select v-model="newChangeAd.bindActCode" placeholder="请选择" style="width: 200px">
-              <el-option v-for="act in actList" :key="act.moduleName" :label="act.moduleName" :value="act.actCode" />
+        <el-row v-if="newChangeAd.type == 1">
+          <el-form-item
+            label="绑定活动"
+            prop="bindActCode"
+          >
+            <el-select
+              v-model="newChangeAd.bindActCode"
+              placeholder="请选择"
+              style="width: 200px"
+            >
+              <el-option
+                v-for="act in actList"
+                :key="act.moduleName"
+                :label="act.moduleName"
+                :value="act.actCode"
+              />
             </el-select>
           </el-form-item>
         </el-row>
-        <el-collapse v-if="newChangeAd.type ==0" accordion>
+        <el-collapse
+          v-if="newChangeAd.type == 0"
+          accordion
+        >
           <el-collapse-item>
             <template slot="title">
               广告位-商场配置
@@ -394,23 +628,51 @@
           </el-collapse-item>
         </el-collapse>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="text" @click="noChangeShopping">取消</el-button>
-        <el-button :loading="btnLoading" type="primary" @click="sureChangeShopping">确认</el-button>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          type="text"
+          @click="noChangeShopping"
+        >取消</el-button>
+        <el-button
+          :loading="btnLoading"
+          type="primary"
+          @click="sureChangeShopping"
+        >确认</el-button>
       </div>
     </el-dialog>
     <!--    新增 修改抽奖信息    -->
-    <el-dialog :visible.sync="drawDialogShowFlag" append-to-body width="70%">
-      <el-steps :active="active" align-center>
+    <el-dialog
+      :visible.sync="drawDialogShowFlag"
+      append-to-body
+      width="70%"
+    >
+      <el-steps
+        :active="active"
+        align-center
+      >
         <el-step title="抽奖基础信息" />
         <el-step title="每日概率\数量" />
       </el-steps>
-      <div v-if="active === 0" id="active1">
+      <div
+        v-if="active === 0"
+        id="active1"
+      >
         <el-row class="row-bg">
-          <el-col :span="8" :offset="4">
+          <el-col
+            :span="8"
+            :offset="4"
+          >
             &nbsp;&nbsp;&nbsp;
             <span>抽奖id：</span>
-            <el-input v-model="drawData.id" autosize placeholder="请输入内容" style="width: 250px;" />
+            <el-input
+              v-model="drawData.id"
+              autosize
+              placeholder="请输入内容"
+              style="width: 250px;"
+            />
           </el-col>
           <el-col :span="8">
             <span>奖品种数：</span>
@@ -425,14 +687,17 @@
           </el-col>
         </el-row>
         <el-row class="row-bg">
-          <el-col :span="8" :offset="4">
+          <el-col
+            :span="8"
+            :offset="4"
+          >
             <span>开始日期：</span>
             <el-date-picker
               v-model="drawData.viewDrawStartTime"
               type="date"
               placeholder="选择日期"
               style="width: 250px"
-              @change="(value) =>drawInfoChange(value,'s')"
+              @change="value => drawInfoChange(value, 's')"
             />
           </el-col>
           <el-col :span="8">
@@ -442,37 +707,64 @@
               type="date"
               placeholder="选择日期"
               style="width: 250px"
-              @change="(value) => drawInfoChange(value,'e')"
+              @change="value => drawInfoChange(value, 'e')"
             />
           </el-col>
         </el-row>
 
         <el-row class="row-bg prize-border">
-          <el-col v-for=" (n,i) in drawData.prizeCount " :key="n" :span="10" class="parizeCode">
-            <span :class="'prize-count'+ i%2">奖品 {{ n }} 劵标识：</span>
+          <el-col
+            v-for="(n, i) in drawData.prizeCount"
+            :key="n"
+            :span="10"
+            class="parizeCode"
+          >
+            <span :class="'prize-count' + (i % 2)">奖品 {{ n }} 劵标识：</span>
             <el-input
-              v-model="drawData.prizeCode[n - 1 ]"
-              :class="'prize-count'+ i%2"
+              v-model="drawData.prizeCode[n - 1]"
+              :class="'prize-count' + (i % 2)"
               autosize
               placeholder="请输入内容"
             />
           </el-col>
         </el-row>
         <el-row class="row-bg">
-          <el-col :span="7" :offset="6">
-            <el-button type="primary" @click="nextStep">下一步</el-button>
+          <el-col
+            :span="7"
+            :offset="6"
+          >
+            <el-button
+              type="primary"
+              @click="nextStep"
+            >下一步</el-button>
           </el-col>
         </el-row>
       </div>
-      <div v-if=" active === 1">
+      <div v-if="active === 1">
         <el-row class="row-bg">
-          <el-col :span="20" :offset="2">
-            <el-table :data="drawData.tableDraw" style="width: 100%" height="500">
-              <el-table-column fixed prop="date" label="日期" width="100" />
-              <el-table-column fixed label=" " width="45">
+          <el-col
+            :span="20"
+            :offset="2"
+          >
+            <el-table
+              :data="drawData.tableDraw"
+              style="width: 100%"
+              height="500"
+            >
+              <el-table-column
+                fixed
+                prop="date"
+                label="日期"
+                width="100"
+              />
+              <el-table-column
+                fixed
+                label=" "
+                width="45"
+              >
                 <!--<template slot-scope="scope">-->
                 <span style="font-size:10px; text-align:right;">数量:</span>
-                <br >
+                <br />
                 <span style="font-size:10px; text-align:right;">概率:</span>
                 <!--</template>-->
               </el-table-column>
@@ -503,9 +795,18 @@
         </el-row>
         <el-row class="row-bg">
           <el-col>
-            <el-col :span="7" :offset="6">
-              <el-button type="primary" @click="backStep">上一步</el-button>
-              <el-button type="success" @click="editSuccess">完成</el-button>
+            <el-col
+              :span="7"
+              :offset="6"
+            >
+              <el-button
+                type="primary"
+                @click="backStep"
+              >上一步</el-button>
+              <el-button
+                type="success"
+                @click="editSuccess"
+              >完成</el-button>
             </el-col>
           </el-col>
         </el-row>
@@ -574,7 +875,7 @@ export default {
         specCode: '',
         url: '',
         showImage: '',
-        haveTL: null,
+        haveTL: 'F',
         time: [],
         bindActCode: '',
         type: ''
@@ -583,9 +884,7 @@ export default {
         name: [
           { required: true, message: '请输入广告位名称', trigger: 'blur' }
         ],
-        bindActCode: [
-          { validator: validateAct2, trigger: 'blur' }
-        ]
+        bindActCode: [{ validator: validateAct2, trigger: 'blur' }]
       },
       shoppingListShow: false,
       actList: [],
@@ -605,9 +904,7 @@ export default {
         name: [
           { required: true, message: '请输入广告位名称', trigger: 'blur' }
         ],
-        bindActCode: [
-          { validator: validateAct, trigger: 'blur' }
-        ]
+        bindActCode: [{ validator: validateAct, trigger: 'blur' }]
       },
       luckDraw: [],
       drawData: {},
@@ -743,10 +1040,22 @@ export default {
     },
     // 新增广告位
     addAdS() {
+      this.addAdForm = {
+        name: null,
+        specCode: null,
+        url: null,
+        showImage: '',
+        haveTL: 'F',
+        time: [],
+        bindActCode: null,
+        type: null
+      }
+      if (this.$refs.upload) this.$refs.upload.clearFiles()
       this.addAdShow = true
     },
     // 取消新增广告位
     cancelAddAd() {
+      this.$refs.upload.clearFiles()
       this.addAdShow = false
     },
     // 修改广告位
@@ -788,15 +1097,24 @@ export default {
                   type: 'success',
                   duration: 2500
                 })
-                const newLinkData = []
-                this.linkData.forEach(function(element, index) {
-                  if (element.specCode !== data.specCode) {
-                    newLinkData.push(element)
-                  }
-                })
-                this.linkData = newLinkData
+                // const newLinkData = []
+                // this.linkData.forEach(function(element, index) {
+                //   if (element.specCode !== data.specCode) {
+                //     newLinkData.push(element)
+                //   }
+                // })
+                // this.linkData = newLinkData
+                // 广告位
+                getLinkData(this.$route.query.actCode)
+                  .then(res => {
+                    console.log('配置——广告位数据', res)
+                    this.linkData = res.dataMap.specLinks
+                  })
+                  .catch(err => {
+                    console.log(err.response.data.message)
+                  })
+                this.linkLoading = false
               }
-              this.linkLoading = false
             })
             .catch(err => {
               console.log(err.response.data.message)
@@ -910,7 +1228,7 @@ export default {
     },
     sureAddAd() {
       console.log('新增广告位', this.addAdForm)
-      this.$refs['addAdForm'].validate((valid) => {
+      this.$refs['addAdForm'].validate(valid => {
         if (valid) {
           this.btnLoading = true
           addSpecLink(this.$route.query.actCode, this.addAdForm)
@@ -928,6 +1246,7 @@ export default {
                   type: 'success',
                   duration: 2500
                 })
+                this.$refs.upload.clearFiles()
                 this.handleSelect('2', 2)
                 this.addAdShow = false
               }
@@ -949,6 +1268,11 @@ export default {
       this.addAdForm.showImage = res.dataMap.fileUrl
       this.newChangeAd.showImage = res.dataMap.fileUrl
     },
+    removeUploadImage(res, file) {
+      console.log('图片上传移除', res, file)
+      this.addAdForm.showImage = null
+      this.newChangeAd.showImage = null
+    },
     // 修改广告位-取消按钮
     noChangeShopping() {
       this.shoppingListShow = false
@@ -960,11 +1284,12 @@ export default {
     },
     // 修改广告位-确定按钮
     sureChangeShopping() {
-      this.$refs['newChangeAd'].validate((valid) => {
+      this.$refs['newChangeAd'].validate(valid => {
         if (valid) {
           this.btnLoading = true
           console.log('修改广告位', this.newChangeAd)
           this.newChangeAd.changeMallList = this.newChangeAdMallList
+          if (!this.newChangeAd.showImage) this.newChangeAd.showImage = ''
           saveSpecLink(this.$route.query.actCode, this.newChangeAd)
             .then(res => {
               console.log('修改广告位接口返回', res)
@@ -1045,7 +1370,9 @@ export default {
           this.drawData.drawStartTime = value + ' 00:00:00'
         } else {
           this.drawData.drawStartTime = this.drawDataEditTemp.drawStartTime
-          this.drawData.viewDrawStartTime = new Date(this.drawData.drawStartTime)
+          this.drawData.viewDrawStartTime = new Date(
+            this.drawData.drawStartTime
+          )
           this.$message('开始时间不能缩减')
         }
       }
@@ -1082,9 +1409,7 @@ export default {
           this.drawDialogShowFlag = true
           this.drawDataStatus = 1
           this.active = 0
-          this.drawDataEditTemp = JSON.parse(
-            JSON.stringify(res.dataMap.drawvo)
-          )
+          this.drawDataEditTemp = JSON.parse(JSON.stringify(res.dataMap.drawvo))
         })
         .catch()
     },
@@ -1203,17 +1528,17 @@ export default {
   width: 250px;
   margin: 0 0 0 35%;
 }
-  .page-container label{
-    font-size: 14px;
-    color: #5e6d82;
-    line-height: 1.5em;
-  }
-  .page-container b{
-    margin-left: 40px;
-    font-size: 15px;
-    line-height: 1.5em;
-  }
-  .page-container{
-    margin: 10px 5px 10px;
-  }
+.page-container label {
+  font-size: 14px;
+  color: #5e6d82;
+  line-height: 1.5em;
+}
+.page-container b {
+  margin-left: 40px;
+  font-size: 15px;
+  line-height: 1.5em;
+}
+.page-container {
+  margin: 10px 5px 10px;
+}
 </style>
