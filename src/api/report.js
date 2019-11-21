@@ -62,9 +62,9 @@ export function getBtnDailyReport(params) {
 }
 
 // 获取字典
-export function getDictTree() {
+export function getDictTree(source) {
   return request({
-    url: 'api/report/dict/tree',
+    url: 'api/report/dict/tree/' + source,
     method: 'get'
   })
 }

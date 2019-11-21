@@ -1023,7 +1023,8 @@ export default {
       } else if (tab.name === 'winningRecord') {
         this.getCore()
       } else if (tab.name === 'btnReportDaily') {
-        this.getDictTree()
+        console.log(this.$route.query.actCode, 'this.$route.query.actCode')
+        this.getDictTree(this.$route.query.actCode)
         this.init()
       } else if (tab.name === 'clockCard') {
         number(this.$route.query.actCode)
@@ -1133,8 +1134,8 @@ export default {
       this.min_price = this.minPrice
       this.max_price = this.maxPrice
     },
-    getDictTree() {
-      getDictTree().then(res => {
+    getDictTree(source) {
+      getDictTree(source).then(res => {
         this.dictTree = []
         this.dictTree = res
         // this.dictTree.push(dictList)
