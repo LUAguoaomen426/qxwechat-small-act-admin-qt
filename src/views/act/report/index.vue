@@ -855,20 +855,6 @@ export default {
       viewTime: []
     }
   },
-  computed: {
-    startTimeStr_ymd: function() {
-      return dateFormat(this.viewTime[0], 'yyyy-MM-dd') + ' 00:00:00'
-    },
-    endTimeStr_ymd: function() {
-      return dateFormat(this.viewTime[1], 'yyyy-MM-dd') + ' 23:59:59'
-    },
-    startTimeStr_Hms: function() {
-      return dateFormat(this.viewTime[0], 'yyyy-MM-dd HH:mm:ss')
-    },
-    endTimeStr_Hms: function() {
-      return dateFormat(this.viewTime[0], 'yyyy-MM-dd HH:mm:ss')
-    }
-  },
   created() {},
   mounted: function() {
     var now = new Date()
@@ -1182,8 +1168,8 @@ export default {
     toQuerySignUpData() {
       this.url = 'api/signUpData/' + this.$route.query.actCode
       this.skipInitFlag = true
-      this.signUpForm.startTime = this.startTimeStr_ymd
-      this.signUpForm.endTime = this.endTimeStr_ymd
+      this.signUpForm.startTime = this.viewTime ?dateFormat(this.viewTime[0], 'yyyy-MM-dd') + ' 00:00:00':null
+      this.signUpForm.endTime = this.viewTime ?dateFormat(this.viewTime[1], 'yyyy-MM-dd') + ' 23:59:59':null
       this.params = this.signUpForm
       this.params['current'] = 1
       this.params['size'] = this.size
