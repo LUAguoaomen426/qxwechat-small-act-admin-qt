@@ -510,6 +510,7 @@
             <el-form-item label="留资页面">
               <el-select
                 v-model="signUpForm.type"
+                clearable
                 placeholder="请选择 留资页面"
               >
                 <el-option
@@ -523,6 +524,7 @@
             <el-form-item label="环境">
               <el-select
                 v-model="signUpForm.cliType"
+                clearable
                 placeholder="请选择环境"
               >
                 <el-option
@@ -542,7 +544,7 @@
             <el-form-item label="选择时间">
               <el-date-picker
                 v-model="viewTime"
-                type="daterange"
+                type="datetimerange"
                 size="small"
                 range-separator="至"
                 start-placeholder="开始时间"
@@ -560,23 +562,13 @@
             </el-form-item>
           </el-form>
           <el-table
+            v-loading="loading"
             :data="data"
-            max-height="460"
             style="width: 100%"
           >
             <el-table-column
               type="index"
               width="50"
-            />
-            <el-table-column
-              prop="name"
-              label="名字"
-              width="150"
-            />
-            <el-table-column
-              prop="mobile"
-              label="手机号"
-              width="150"
             />
             <el-table-column
               prop="mallName"
@@ -589,36 +581,43 @@
               width="150"
             />
             <el-table-column
+              prop="updateTime"
+              label="时间"
+              width="150"
+            >
+              <template slot-scope="scope">
+                {{ dateFormat(new Date(scope.row.updateTime),'yyyy-MM-dd HH:mm:ss') }}
+              </template>
+            </el-table-column>
+            <el-table-column
               prop="cliType"
               label="环境"
               width="150"
             >
               <template slot-scope="scope">
-                {{ cliTypeStr[scope.row.cliType] }}
+                <el-tag v-if="scope.row.cliType == 1">{{ cliTypeStr[scope.row.cliType] }}</el-tag>
+                <el-tag v-if="scope.row.cliType == 2" type="success">{{ cliTypeStr[scope.row.cliType] }}</el-tag>
+                <el-tag v-if="scope.row.cliType == 3" type="info">{{ cliTypeStr[scope.row.cliType] }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column
-              prop="scene"
-              label="scene"
-              width="150"
-            />
-            <el-table-column
-              prop="fromOpenId"
-              label="分享人OpenId"
-              width="180"
-            />
-            <el-table-column
-              prop="fromUnionId"
-              label="分享人UnionId"
-              width="180"
-            />
-            <el-table-column
-              prop="updateTime"
-              label="留资时间"
-              width="150"
+              prop="name"
+              label="留资信息"
             >
               <template slot-scope="scope">
-                {{ dateFormat(new Date(scope.row.updateTime),'yyyy-MM-dd HH:mm:ss') }}
+                <label>姓名：</label>{{ scope.row.name }}<br>
+                <label>手机号：</label>{{ scope.row.mobile }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="渠道信息"
+            >
+              <template slot-scope="scope">
+                <block v-if="scope.row.scene"><label>scene：</label>{{ scope.row.scene }}<br></block>
+                <block v-if="scope.row.fromOpenId"><label>分享人openid：</label>{{ scope.row.fromOpenId }}<br></block>
+                <block v-if="scope.row.fromUnionId"><label>分享人unionid：</label>{{ scope.row.fromUnionId }}</block>
+                <block v-if="!scope.row.scene && !scope.row.fromOpenId && !scope.row.fromUnionId">无</block>
               </template>
             </el-table-column>
           </el-table>
@@ -1008,6 +1007,10 @@ export default {
     },
     handleClick(tab, event) {
       this.skipInitFlag = false
+      this.page = 0
+      this.size = 10
+      this.total = 0
+      this.data = []
       if (tab.name === 'first') {
         this.$refs.countTo1.start()
         this.$refs.countTo2.start()
@@ -1168,8 +1171,8 @@ export default {
     toQuerySignUpData() {
       this.url = 'api/signUpData/' + this.$route.query.actCode
       this.skipInitFlag = true
-      this.signUpForm.startTime = this.viewTime ?dateFormat(this.viewTime[0], 'yyyy-MM-dd') + ' 00:00:00':null
-      this.signUpForm.endTime = this.viewTime ?dateFormat(this.viewTime[1], 'yyyy-MM-dd') + ' 23:59:59':null
+      this.signUpForm.startTime = this.viewTime ? dateFormat(this.viewTime[0], 'yyyy-MM-dd HH:mm:ss') : null
+      this.signUpForm.endTime = this.viewTime ? dateFormat(this.viewTime[1], 'yyyy-MM-dd HH:mm:ss') : null
       this.params = this.signUpForm
       this.params['current'] = 1
       this.params['size'] = this.size
