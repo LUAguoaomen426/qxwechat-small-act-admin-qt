@@ -881,6 +881,8 @@ export default {
     this.form.time.push(end)
     this.dictDate.push(now)
     this.dictDate.push(end)
+    this.viewTime.push(now)
+    this.viewTime.push(end)
     this.params['dataDateStart'] = this.dictDate
       ? dateFormat(this.dictDate[0], 'yyyy-MM-dd') + ' 00:00:00'
       : ''
@@ -1019,11 +1021,7 @@ export default {
         })
     },
     handleClick(tab, event) {
-      var now = new Date()
-      var end = new Date(now.getTime() + 3600 * 1000 * 24)
-      this.viewTime.push(now)
-      this.viewTime.push(end)
-
+      this.skipInitFlag = false
       if (tab.name === 'first') {
         this.$refs.countTo1.start()
         this.$refs.countTo2.start()
