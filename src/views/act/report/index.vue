@@ -871,7 +871,7 @@ export default {
       loading: false,
       viewTime: [],
 
-      json_fields: {
+      signUpExoprtField: {
         'Complete name': 'name',
         City: 'city',
         Telephone: 'phone.mobile',
