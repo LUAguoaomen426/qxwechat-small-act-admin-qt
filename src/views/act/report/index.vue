@@ -560,6 +560,18 @@
                 @click="toQuerySignUpData"
               >查询</el-button>
             </el-form-item>
+            <el-form-item>
+              <download-excel
+                :fields="json_fields"
+                :fetch="fetchData"
+              >
+                <!-- Download Data -->
+                <el-button
+                  type="primary"
+                  size="small"
+                >导出EXCEL</el-button>
+              </download-excel>
+            </el-form-item>
           </el-form>
           <el-table
             v-loading="loading"
@@ -596,8 +608,14 @@
             >
               <template slot-scope="scope">
                 <el-tag v-if="scope.row.cliType == 1">{{ cliTypeStr[scope.row.cliType] }}</el-tag>
-                <el-tag v-if="scope.row.cliType == 2" type="success">{{ cliTypeStr[scope.row.cliType] }}</el-tag>
-                <el-tag v-if="scope.row.cliType == 3" type="info">{{ cliTypeStr[scope.row.cliType] }}</el-tag>
+                <el-tag
+                  v-if="scope.row.cliType == 2"
+                  type="success"
+                >{{ cliTypeStr[scope.row.cliType] }}</el-tag>
+                <el-tag
+                  v-if="scope.row.cliType == 3"
+                  type="info"
+                >{{ cliTypeStr[scope.row.cliType] }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column
@@ -851,7 +869,27 @@ export default {
       cliTypeStr: cliTypeStr,
       query: {},
       loading: false,
-      viewTime: []
+      viewTime: [],
+
+      json_fields: {
+        'Complete name': 'name',
+        City: 'city',
+        Telephone: 'phone.mobile',
+        'Telephone 2': {
+          field: 'phone.landline',
+          callback: value => {
+            return `Landline Phone - ${value}`
+          }
+        }
+      },
+      json_meta: [
+        [
+          {
+            key: 'charset',
+            value: 'utf-8'
+          }
+        ]
+      ]
     }
   },
   created() {},
@@ -1172,12 +1210,21 @@ export default {
     toQuerySignUpData() {
       this.url = 'api/signUpData/' + this.$route.query.actCode
       this.skipInitFlag = true
-      this.signUpForm.startTime = this.viewTime ? dateFormat(this.viewTime[0], 'yyyy-MM-dd HH:mm:ss') : null
-      this.signUpForm.endTime = this.viewTime ? dateFormat(this.viewTime[1], 'yyyy-MM-dd HH:mm:ss') : null
+      this.signUpForm.startTime = this.viewTime
+        ? dateFormat(this.viewTime[0], 'yyyy-MM-dd HH:mm:ss')
+        : null
+      this.signUpForm.endTime = this.viewTime
+        ? dateFormat(this.viewTime[1], 'yyyy-MM-dd HH:mm:ss')
+        : null
       this.params = this.signUpForm
       this.params['current'] = 1
       this.params['size'] = this.size
       this.toQuery()
+    },
+    fetchData() {
+      return [
+        
+      ]
     }
   }
 }
