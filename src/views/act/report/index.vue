@@ -562,8 +562,9 @@
             </el-form-item>
             <el-form-item>
               <download-excel
-                :fields="json_fields"
-                :fetch="fetchData"
+                :fields="signUpExoprtField"
+                :fetch="getSignUpExportData"
+                name="signUpData.xls"
               >
                 <!-- Download Data -->
                 <el-button
@@ -761,7 +762,8 @@ import {
   addGroupNumber,
   addTicketNumber,
   getDictTree,
-  getSignUpFormParam
+  getSignUpFormParam,
+  getSignUpData
 } from '@/api/report'
 import countTo from 'vue-count-to'
 import { dateFormat } from '@/utils/formatDate'
@@ -872,21 +874,32 @@ export default {
       viewTime: [],
 
       signUpExoprtField: {
-        'Complete name': 'name',
-        City: 'city',
-        Telephone: 'phone.mobile',
-        'Telephone 2': {
-          field: 'phone.landline',
+        名字: 'name',
+        手机: 'mobile',
+        omsCode: 'omsCode',
+        商场名称: 'mallName',
+        留资页面: 'type',
+        时间: {
+          field: 'updateTime',
           callback: value => {
-            return `Landline Phone - ${value}`
+            return dateFormat(new Date(value), 'yyyy-MM-dd HH:mm:ss')
           }
-        }
+        },
+        环境: {
+          field: 'cliType',
+          callback: value => {
+            return cliTypeStr[value]
+          }
+        },
+        scene: 'scene',
+        fromOpenId: 'fromOpenId',
+        fromUnionId: 'fromUnionId'
       },
       json_meta: [
         [
           {
             key: 'charset',
-            value: 'utf-8'
+            value: 'gb2312'
           }
         ]
       ]
@@ -1221,10 +1234,16 @@ export default {
       this.params['size'] = this.size
       this.toQuery()
     },
-    fetchData() {
-      return [
-        
-      ]
+    async getSignUpExportData() {
+      if (!this.total || this.total < 1) {
+        return []
+      }
+      var param = this.signUpForm
+      param['current'] = 1
+      param['size'] = this.total
+      var res = await getSignUpData(this.$route.query.actCode, param)
+      console.log(res)
+      return res.content
     }
   }
 }

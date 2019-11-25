@@ -75,3 +75,11 @@ export function getSignUpFormParam(source) {
     method: 'get'
   })
 }
+
+export function getSignUpData(source, params) {
+  return request({
+    url: 'api/signUpData/' + source,
+    method: 'get',
+    params
+  })
+}
