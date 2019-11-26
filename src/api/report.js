@@ -83,3 +83,11 @@ export function getSignUpData(source, params) {
     params
   })
 }
+
+export function getBtnSummary(data) {
+  return request({
+    url: 'api/btnDailySummary',
+    method: 'get',
+    params: data
+  })
+}

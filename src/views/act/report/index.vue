@@ -561,17 +561,12 @@
               >查询</el-button>
             </el-form-item>
             <el-form-item>
-              <download-excel
-                :fields="signUpExoprtField"
-                :fetch="getSignUpExportData"
-                name="signUpData.xls"
-              >
-                <!-- Download Data -->
-                <el-button
-                  type="primary"
-                  size="small"
-                >导出EXCEL</el-button>
-              </download-excel>
+              <el-button
+                type="primary"
+                size="small"
+                icon="el-icon-download"
+                @click="exportSignUp"
+              >导出</el-button>
             </el-form-item>
           </el-form>
           <el-table
@@ -633,10 +628,10 @@
               label="渠道信息"
             >
               <template slot-scope="scope">
-                <block v-if="scope.row.scene"><label>scene：</label>{{ scope.row.scene }}<br></block>
-                <block v-if="scope.row.fromOpenId"><label>分享人openid：</label>{{ scope.row.fromOpenId }}<br></block>
-                <block v-if="scope.row.fromUnionId"><label>分享人unionid：</label>{{ scope.row.fromUnionId }}</block>
-                <block v-if="!scope.row.scene && !scope.row.fromOpenId && !scope.row.fromUnionId">无</block>
+                <template v-if="scope.row.scene"><label>scene：</label>{{ scope.row.scene }}<br></template>
+                <template v-if="scope.row.fromOpenId"><label>分享人openid：</label>{{ scope.row.fromOpenId }}<br></template>
+                <template v-if="scope.row.fromUnionId"><label>分享人unionid：</label>{{ scope.row.fromUnionId }}</template>
+                <template v-if="!scope.row.scene && !scope.row.fromOpenId && !scope.row.fromUnionId">无</template>
               </template>
             </el-table-column>
           </el-table>
@@ -652,7 +647,7 @@
         </el-tab-pane>
         <el-tab-pane
           v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_BTN_DAILY'])"
-          label="按钮点击记录"
+          label="每日按钮点击记录"
           name="btnReportDaily"
         >
           <div class="froms">
@@ -690,13 +685,21 @@
                 </el-form-item>
                 <el-form-item>
                   <el-button
-                    v-permission="['ADMIN','MALL_ALL','MALL_LIST']"
+                    v-permission="['ADMIN','REPORT_ALL','REPORT_ACT_BTN_DAILY']"
                     class="filter-item"
                     size="mini"
                     type="success"
                     icon="el-icon-search"
                     @click="toQuery"
                   >搜索</el-button>
+                </el-form-item>
+                <el-form-item>
+                  <el-button
+                    type="primary"
+                    size="small"
+                    icon="el-icon-download"
+                    @click="exportBtn"
+                  >导出</el-button>
                 </el-form-item>
               </div>
             </el-form>
@@ -746,6 +749,88 @@
             @current-change="pageChange"
           />
         </el-tab-pane>
+        <el-tab-pane
+          v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_BTN_DAILY_SUMMARY'])"
+          label="汇总按钮点击记录"
+          name="btnReportDailySummary"
+        >
+          <div class="froms">
+            <el-form
+              ref="form"
+              :inline="true"
+              label-width="80px"
+              size="small"
+              class="demo-form-inline"
+            >
+              <div>
+                <el-form-item label="模块">
+                  <treeselect
+                    :show-count="true"
+                    :options="dictTree"
+                    :multiple="true"
+                    search-nested
+                    style="width: 560px;"
+                    placeholder="选择模块"
+                    @input="dictSelectSummary"
+                  />
+                </el-form-item>
+                <el-form-item>
+                  <el-button
+                    v-permission="['ADMIN','REPORT_ALL','REPORT_ACT_BTN_DAILY_SUMMARY']"
+                    class="filter-item"
+                    type="success"
+                    icon="el-icon-search"
+                    @click="initBtnSummaryPane"
+                  >搜索</el-button>
+                </el-form-item>
+                <el-form-item>
+                  <el-button
+                    type="primary"
+                    size="small"
+                    icon="el-icon-download"
+                    @click="exportBtnSummary"
+                  >导出</el-button>
+                </el-form-item>
+              </div>
+            </el-form>
+          </div>
+          <el-table
+            v-loading="loading"
+            :data="data"
+            style="width: 100%"
+          >
+            <el-table-column type="index" />
+            <el-table-column
+              prop="id"
+              label="编号"
+            />
+            <el-table-column
+              prop="ext1"
+              label="父模块"
+            />
+            <el-table-column
+              prop="dictLabel"
+              label="模块"
+            />
+            <el-table-column
+              prop="pv"
+              label="pv"
+            />
+            <el-table-column
+              prop="uv"
+              label="uv"
+            />
+          </el-table>
+          <!--分页组件-->
+          <el-pagination
+            :total="total"
+            :current-page="page + 1"
+            style="margin-top: 8px;"
+            layout="total, prev, pager, next, sizes"
+            @size-change="sizeChange"
+            @current-change="pageChange"
+          />
+        </el-tab-pane>
       </el-tabs>
     </div>
   </div>
@@ -763,7 +848,9 @@ import {
   addTicketNumber,
   getDictTree,
   getSignUpFormParam,
-  getSignUpData
+  getSignUpData,
+  getBtnDailyReport,
+  getBtnSummary
 } from '@/api/report'
 import countTo from 'vue-count-to'
 import { dateFormat } from '@/utils/formatDate'
@@ -771,6 +858,7 @@ import initData from '@/mixins/initData'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { cliTypeOptions, cliTypeStr } from '@/utils/Enums'
+import { exportCsv } from '@/utils/export2Csv'
 
 export default {
   components: { countTo, Treeselect },
@@ -871,38 +959,7 @@ export default {
       cliTypeStr: cliTypeStr,
       query: {},
       loading: false,
-      viewTime: [],
-
-      signUpExoprtField: {
-        名字: 'name',
-        手机: 'mobile',
-        omsCode: 'omsCode',
-        商场名称: 'mallName',
-        留资页面: 'type',
-        时间: {
-          field: 'updateTime',
-          callback: value => {
-            return dateFormat(new Date(value), 'yyyy-MM-dd HH:mm:ss')
-          }
-        },
-        环境: {
-          field: 'cliType',
-          callback: value => {
-            return cliTypeStr[value]
-          }
-        },
-        scene: 'scene',
-        fromOpenId: 'fromOpenId',
-        fromUnionId: 'fromUnionId'
-      },
-      json_meta: [
-        [
-          {
-            key: 'charset',
-            value: 'gb2312'
-          }
-        ]
-      ]
+      viewTime: []
     }
   },
   created() {},
@@ -1077,6 +1134,9 @@ export default {
         console.log(this.$route.query.actCode, 'this.$route.query.actCode')
         this.getDictTree(this.$route.query.actCode)
         this.init()
+      } else if (tab.name === 'btnReportDailySummary') {
+        this.getDictTree(this.$route.query.actCode)
+        this.initBtnSummaryPane()
       } else if (tab.name === 'clockCard') {
         number(this.$route.query.actCode)
           .then(res => {
@@ -1200,6 +1260,14 @@ export default {
       this.params['dictIdStr'] = dictIdStr
       console.log('选中了', this.params['dictIdStr'])
     },
+    dictSelectSummary(node, instanceId) {
+      let dictIdStr = ''
+      node.forEach(v => {
+        dictIdStr += v + ','
+      })
+      this.params['dictIdStrSummary'] = dictIdStr
+      console.log('选中了', this.params['dictIdStrSummary'])
+    },
     dictDateChange() {
       this.params['dataDateStart'] = this.dictDate
         ? dateFormat(this.dictDate[0], 'yyyy-MM-dd') + ' 00:00:00'
@@ -1220,6 +1288,15 @@ export default {
           console.log(err.response.data.message)
         })
     },
+    initBtnSummaryPane() {
+      console.log('点击了汇总按钮报表')
+      this.url = 'api/btnDailySummary'
+      this.skipInitFlag = true
+      this.params['current'] = 1
+      this.params['size'] = this.size
+      this.params['source'] = this.$route.query.actCode
+      this.toQuery()
+    },
     toQuerySignUpData() {
       this.url = 'api/signUpData/' + this.$route.query.actCode
       this.skipInitFlag = true
@@ -1234,16 +1311,131 @@ export default {
       this.params['size'] = this.size
       this.toQuery()
     },
-    async getSignUpExportData() {
-      if (!this.total || this.total < 1) {
-        return []
+    exportBtnSummary() {
+      var obj = {
+        source: this.$route.query.actCode,
+        dictIdStrSummary: this.params['dictIdStrSummary'],
+        current: 1,
+        size: 99999
       }
+      getBtnSummary(obj)
+        .then(res => {
+          const fields = [{
+            label: '编号',
+            value: 'id'
+          }, {
+            label: '父模块',
+            value: 'ext1'
+          }, {
+            label: '模块',
+            value: 'dictLabel'
+          }, {
+            label: 'PV',
+            value: 'pv'
+          }, {
+            label: 'UV',
+            value: 'uv'
+          }]
+          exportCsv(res.content, fields, '汇总按钮点击报表')
+        })
+        .catch(err => {
+          console.log(err.message)
+        })
+    },
+    exportBtn() {
+      const obj = {
+        source: this.$route.query.actCode,
+        dictIdStr: this.params['dictIdStr'],
+        current: 1,
+        size: 99999,
+        dataDateStart: this.params['dataDateStart'],
+        dataDateEnd: this.params['dataDateEnd']
+      }
+      getBtnDailyReport(obj)
+        .then(res => {
+          const fields = [{
+            label: '编号',
+            value: 'id'
+          }, {
+            label: '父模块',
+            value: 'ext1'
+          }, {
+            label: '模块',
+            value: 'dictLabel'
+          }, {
+            label: '日期',
+            value: 'dataDate'
+          }, {
+            label: 'PV',
+            value: 'pv'
+          }, {
+            label: 'UV',
+            value: 'uv'
+          }]
+          const dateStr = dateFormat(new Date(), 'yyyyMMdd')
+          const rows = []
+          res.content.forEach(e => {
+            const time = dateFormat(new Date(e['dataDate']), 'yyyy-MM-dd')
+            e['dataDate'] = time
+            rows.push(e)
+          })
+          exportCsv(rows, fields, '每日按钮点击报表' + dateStr)
+        })
+        .catch(err => {
+          console.log(err.message)
+        })
+    },
+    exportSignUp() {
       var param = this.signUpForm
       param['current'] = 1
-      param['size'] = this.total
-      var res = await getSignUpData(this.$route.query.actCode, param)
-      console.log(res)
-      return res.content
+      param['size'] = 99999
+      getSignUpData(this.$route.query.actCode, param)
+        .then(res => {
+          const fields = [{
+            label: '编号',
+            value: 'id'
+          }, {
+            label: '商场',
+            value: 'mallName'
+          }, {
+            label: '留资页面',
+            value: 'type'
+          }, {
+            label: '时间',
+            value: 'updateTime'
+          }, {
+            label: '环境',
+            value: 'cliType'
+          }, {
+            label: '姓名',
+            value: 'name'
+          }, {
+            label: '手机号',
+            value: 'mobile'
+          }, {
+            label: 'scene',
+            value: 'scene'
+          }, {
+            label: '分享人openid',
+            value: 'fromOpenId'
+          }, {
+            label: '分享人unionid',
+            value: 'fromUnionId'
+          }]
+          const dateStr = dateFormat(new Date(), 'yyyyMMddHHmm')
+          const rows = []
+          res.content.forEach(e => {
+            const cliType = e['cliType'] === 1 ? '微信内' : (e['cliType'] === 2 ? '小程序' : '微信外')
+            const time = dateFormat(new Date(e['updateTime']), 'yyyy-MM-dd HH:mm:ss')
+            e['cliType'] = cliType
+            e['updateTime'] = time
+            rows.push(e)
+          })
+          exportCsv(rows, fields, '留资记录' + dateStr)
+        })
+        .catch(err => {
+          console.log(err.message)
+        })
     }
   }
 }
