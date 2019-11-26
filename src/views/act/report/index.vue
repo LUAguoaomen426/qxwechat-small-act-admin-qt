@@ -474,6 +474,17 @@ export default {
     },
     handleClick(tab, event) {
       if (tab.name === 'first') {
+        number(this.$route.query.actCode).then(res => {
+          console.log('number', res)
+          this.groupNumberStart = res.dataMap.groupNumber - 200
+          this.groupNumberEnd = res.dataMap.groupNumber
+          this.extraNumberStart = 0
+          this.extraNumberEnd = res.dataMap.extraNumber
+          this.totalNumberStart = res.dataMap.groupNumber - 200
+          this.totalNumberEnd = res.dataMap.totalNumber
+        }).catch(err => {
+          console.log(err.response.data.message)
+        })
         this.$refs.countTo1.start()
         this.$refs.countTo2.start()
         this.$refs.countTo3.start()
@@ -485,18 +496,6 @@ export default {
       } else if (tab.name === 'winningRecord') {
         this.getCore()
       } else if (tab.name === 'clockCard') {
-        number(this.$route.query.actCode).then(res => {
-          console.log('number', res)
-          this.groupNumberStart = res.dataMap.groupNumber - 200
-          this.groupNumberEnd = res.dataMap.groupNumber
-          this.extraNumberStart = 0
-          this.extraNumberEnd = res.dataMap.extraNumber
-          this.totalNumberStart = res.dataMap.groupNumber - 200
-          this.totalNumberEnd = res.dataMap.totalNumber
-          // this.chartPVUVData.rows = []
-        }).catch(err => {
-          console.log(err.response.data.message)
-        })
         this.getClockCardData()
       }
     },
