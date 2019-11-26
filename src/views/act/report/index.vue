@@ -89,9 +89,12 @@
             <el-row>
               <el-col :span="11">
                 <el-form-item label="需要增加的人数">
-                  <el-input
+                  <el-input-number
                     id="addGroupNumber"
+                    :precision="0"
                     v-model="peopleNum"
+                    style="width:240px"
+                    size="small"
                     name="addGroupNumber"/>
                 </el-form-item>
               </el-col>
@@ -115,9 +118,9 @@
           <el-form label-width="160px">
             <el-row style="padding: 40px;">
               请输入区间：
-              <el-input v-model="minPrice" type="number" style="margin-left: 50px;width: 100px;" class="ticket" size="small" @onchange="changePrice"/>
+              <el-input v-model="minPrice" type="number" style="margin-left: 50px;width: 100px;" class="ticket" size="small" @change="changePrice"/>
               --
-              <el-input v-model="maxPrice" type="number" style="width: 100px;" class="ticket" @onchange="changePrice"/>
+              <el-input v-model="maxPrice" type="number" style="width: 100px;" class="ticket" @change="changePrice"/>
               <div style="margin-top: 10px">
                 <div><span class="min_price">{{ min_price }}</span> 每次增加---
                   <el-input v-model="lowMinNumber" type="number" style="width: 100px;" class="ticket"/>
@@ -471,6 +474,17 @@ export default {
     },
     handleClick(tab, event) {
       if (tab.name === 'first') {
+        number(this.$route.query.actCode).then(res => {
+          console.log('number', res)
+          this.groupNumberStart = res.dataMap.groupNumber - 200
+          this.groupNumberEnd = res.dataMap.groupNumber
+          this.extraNumberStart = 0
+          this.extraNumberEnd = res.dataMap.extraNumber
+          this.totalNumberStart = res.dataMap.groupNumber - 200
+          this.totalNumberEnd = res.dataMap.totalNumber
+        }).catch(err => {
+          console.log(err.response.data.message)
+        })
         this.$refs.countTo1.start()
         this.$refs.countTo2.start()
         this.$refs.countTo3.start()
@@ -482,18 +496,6 @@ export default {
       } else if (tab.name === 'winningRecord') {
         this.getCore()
       } else if (tab.name === 'clockCard') {
-        number(this.$route.query.actCode).then(res => {
-          console.log('number', res)
-          this.groupNumberStart = res.dataMap.groupNumber - 200
-          this.groupNumberEnd = res.dataMap.groupNumber
-          this.extraNumberStart = 0
-          this.extraNumberEnd = res.dataMap.extraNumber
-          this.totalNumberStart = res.dataMap.groupNumber - 200
-          this.totalNumberEnd = res.dataMap.totalNumber
-          // this.chartPVUVData.rows = []
-        }).catch(err => {
-          console.log(err.response.data.message)
-        })
         this.getClockCardData()
       }
     },
