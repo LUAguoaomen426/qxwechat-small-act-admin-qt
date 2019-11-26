@@ -122,7 +122,7 @@
               --
               <el-input v-model="maxPrice" type="number" style="width: 100px;" class="ticket" @change="changePrice"/>
               <div style="margin-top: 10px">
-                <div><<span class="min_price">{{ min_price }}</span> 每次增加---
+                <div><span class="min_price">{{ min_price }}</span> 每次增加---
                   <el-input v-model="lowMinNumber" type="number" style="width: 100px;" class="ticket"/>
                   ~
                   <el-input v-model="lowMaxNumber" type="number" style="width: 100px;" class="ticket"/>

@@ -764,7 +764,7 @@
               >
                 <!--<template slot-scope="scope">-->
                 <span style="font-size:10px; text-align:right;">数量:</span>
-                <br />
+                <br/>
                 <span style="font-size:10px; text-align:right;">概率:</span>
                 <!--</template>-->
               </el-table-column>
