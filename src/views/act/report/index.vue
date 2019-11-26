@@ -664,6 +664,7 @@
                     :show-count="true"
                     :options="dictTree"
                     :multiple="true"
+                    :max-height="150"
                     search-nested
                     style="width: 560px;"
                     placeholder="选择模块"
@@ -768,6 +769,7 @@
                     :show-count="true"
                     :options="dictTree"
                     :multiple="true"
+                    :max-height="150"
                     search-nested
                     style="width: 560px;"
                     placeholder="选择模块"
