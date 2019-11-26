@@ -89,7 +89,10 @@
             <el-row>
               <el-col :span="11">
                 <el-form-item label="需要增加的人数">
-                  <el-input
+                  <el-input-number 
+                  style="width:240px"
+                    :precision="0"
+                    size="small"
                     id="addGroupNumber"
                     v-model="peopleNum"
                     name="addGroupNumber"/>
