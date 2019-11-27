@@ -667,6 +667,7 @@
                     :options="dictTree"
                     :multiple="true"
                     :max-height="150"
+                    no-options-text="选项为空"
                     search-nested
                     style="width: 560px;"
                     placeholder="选择模块"
@@ -763,7 +764,6 @@
           v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_BTN_DAILY_SUMMARY'])"
           label="汇总按钮点击记录"
           name="btnReportDailySummary"
-          @sort-change="tableChangeSummay"
         >
           <div class="froms">
             <el-form
@@ -780,6 +780,7 @@
                     :options="dictTree"
                     :multiple="true"
                     :max-height="150"
+                    no-options-text="选项为空"
                     search-nested
                     style="width: 560px;"
                     placeholder="选择模块"
@@ -811,7 +812,7 @@
             :data="data"
             :default-sort = "{prop: 'id', order: 'descending'}"
             style="width: 100%"
-            @sort-change="tableChange"
+            @sort-change="tableChangeSummary"
           >
             <el-table-column type="index" />
             <el-table-column
@@ -1334,8 +1335,8 @@ export default {
         dictIdStrSummary: this.params['dictIdStrSummary'],
         current: 1,
         size: 99999,
-        sortColumn: this.params['sortColumn'],
-        isAsc: this.params['isAsc']
+        sortColumnSummary: this.params['sortColumnSummary'],
+        isAscSummary: this.params['isAscSummary']
       }
       getBtnSummary(obj)
         .then(res => {
@@ -1467,11 +1468,12 @@ export default {
         this.init()
       }
     },
-    tableChangeSummay(column, prop, order) {
+    tableChangeSummary(column, prop, order) {
+      console.log(column)
       if (column.prop) {
         this.page = 0
-        this.params['sortColumn'] = 't.' + column.prop
-        this.params['isAsc'] = column.order === 'ascending'
+        this.params['sortColumnSummary'] = 't.' + column.prop
+        this.params['isAscSummary'] = column.order === 'ascending'
         this.initBtnSummaryPane()
       }
     }
