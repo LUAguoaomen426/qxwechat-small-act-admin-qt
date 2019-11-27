@@ -556,6 +556,7 @@
                 v-permission="['ADMIN','REPORT_ALL','REPORT_SIGN_UP']"
                 type="success"
                 size="mini"
+                class="filter-item"
                 icon="el-icon-search"
                 @click="toQuerySignUpData"
               >查询</el-button>
@@ -564,6 +565,7 @@
               <el-button
                 type="primary"
                 size="mini"
+                class="filter-item"
                 icon="el-icon-download"
                 @click="exportSignUp"
               >导出</el-button>
@@ -696,6 +698,7 @@
                 </el-form-item>
                 <el-form-item>
                   <el-button
+                    class="filter-item"
                     type="primary"
                     size="mini"
                     icon="el-icon-download"
@@ -708,12 +711,15 @@
           <el-table
             v-loading="loading"
             :data="data"
+            :default-sort = "{prop: 'id', order: 'descending'}"
             style="width: 100%"
+            @sort-change="tableChange"
           >
             <el-table-column type="index" />
             <el-table-column
               prop="id"
               label="编号"
+              sortable="custom"
             />
             <el-table-column
               prop="ext1"
@@ -726,6 +732,7 @@
             <el-table-column
               prop="dataDate"
               label="日期"
+              sortable="custom"
             >
               <template slot-scope="scope">
                 <span>{{ dateFormat(new Date(scope.row.dataDate), 'yyyy年MM月dd日') }}</span>
@@ -734,10 +741,12 @@
             <el-table-column
               prop="pv"
               label="pv"
+              sortable="custom"
             />
             <el-table-column
               prop="uv"
               label="uv"
+              sortable="custom"
             />
           </el-table>
           <!--分页组件-->
@@ -754,6 +763,7 @@
           v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_BTN_DAILY_SUMMARY'])"
           label="汇总按钮点击记录"
           name="btnReportDailySummary"
+          @sort-change="tableChangeSummay"
         >
           <div class="froms">
             <el-form
@@ -787,6 +797,7 @@
                 </el-form-item>
                 <el-form-item>
                   <el-button
+                    class="filter-item"
                     type="primary"
                     icon="el-icon-download"
                     @click="exportBtnSummary"
@@ -798,12 +809,15 @@
           <el-table
             v-loading="loading"
             :data="data"
+            :default-sort = "{prop: 'id', order: 'descending'}"
             style="width: 100%"
+            @sort-change="tableChange"
           >
             <el-table-column type="index" />
             <el-table-column
               prop="id"
               label="编号"
+              sortable="custom"
             />
             <el-table-column
               prop="ext1"
@@ -816,10 +830,12 @@
             <el-table-column
               prop="pv"
               label="pv"
+              sortable="custom"
             />
             <el-table-column
               prop="uv"
               label="uv"
+              sortable="custom"
             />
           </el-table>
           <!--分页组件-->
@@ -1317,7 +1333,9 @@ export default {
         source: this.$route.query.actCode,
         dictIdStrSummary: this.params['dictIdStrSummary'],
         current: 1,
-        size: 99999
+        size: 99999,
+        sortColumn: this.params['sortColumn'],
+        isAsc: this.params['isAsc']
       }
       getBtnSummary(obj)
         .then(res => {
@@ -1350,7 +1368,9 @@ export default {
         current: 1,
         size: 99999,
         dataDateStart: this.params['dataDateStart'],
-        dataDateEnd: this.params['dataDateEnd']
+        dataDateEnd: this.params['dataDateEnd'],
+        sortColumn: this.params['sortColumn'],
+        isAsc: this.params['isAsc']
       }
       getBtnDailyReport(obj)
         .then(res => {
@@ -1437,6 +1457,23 @@ export default {
         .catch(err => {
           console.log(err.message)
         })
+    },
+    tableChange(column, prop, order) {
+      if (column.prop) {
+        this.page = 0
+        column.prop = column.prop === 'dataDate' ? 'data_date' : column.prop
+        this.params['sortColumn'] = 't.' + column.prop
+        this.params['isAsc'] = column.order === 'ascending'
+        this.init()
+      }
+    },
+    tableChangeSummay(column, prop, order) {
+      if (column.prop) {
+        this.page = 0
+        this.params['sortColumn'] = 't.' + column.prop
+        this.params['isAsc'] = column.order === 'ascending'
+        this.initBtnSummaryPane()
+      }
     }
   }
 }
