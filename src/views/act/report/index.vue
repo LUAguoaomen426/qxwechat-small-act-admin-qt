@@ -563,7 +563,7 @@
             <el-form-item>
               <el-button
                 type="primary"
-                size="small"
+                size="mini"
                 icon="el-icon-download"
                 @click="exportSignUp"
               >导出</el-button>
@@ -697,7 +697,7 @@
                 <el-form-item>
                   <el-button
                     type="primary"
-                    size="small"
+                    size="mini"
                     icon="el-icon-download"
                     @click="exportBtn"
                   >导出</el-button>
@@ -788,7 +788,6 @@
                 <el-form-item>
                   <el-button
                     type="primary"
-                    size="small"
                     icon="el-icon-download"
                     @click="exportBtnSummary"
                   >导出</el-button>
