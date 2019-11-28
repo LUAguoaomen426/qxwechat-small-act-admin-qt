@@ -17,7 +17,9 @@ import '@/icons' // icon
 import './router/index' // permission control
 
 import VCharts from 'v-charts'
+import JsonExcel from 'vue-json-excel'
 
+Vue.component('downloadExcel', JsonExcel)
 // import Router from 'vue-router'
 
 Vue.use(mavonEditor)

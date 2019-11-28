@@ -53,3 +53,41 @@ export function addTicketNumber(source, data) {
   })
 }
 
+export function getBtnDailyReport(params) {
+  return request({
+    url: 'api/btnDaily',
+    method: 'get',
+    params: params
+  })
+}
+
+// 获取字典
+export function getDictTree(source) {
+  return request({
+    url: 'api/report/dict/tree/' + source,
+    method: 'get'
+  })
+}
+
+export function getSignUpFormParam(source) {
+  return request({
+    url: 'api/signUpFormParam/' + source,
+    method: 'get'
+  })
+}
+
+export function getSignUpData(source, params) {
+  return request({
+    url: 'api/signUpData/' + source,
+    method: 'get',
+    params
+  })
+}
+
+export function getBtnSummary(data) {
+  return request({
+    url: 'api/btnDailySummary',
+    method: 'get',
+    params: data
+  })
+}
