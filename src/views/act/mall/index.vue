@@ -764,7 +764,7 @@
               >
                 <!--<template slot-scope="scope">-->
                 <span style="font-size:10px; text-align:right;">数量:</span>
-                <br/>
+                <br />
                 <span style="font-size:10px; text-align:right;">概率:</span>
                 <!--</template>-->
               </el-table-column>
@@ -1189,12 +1189,13 @@ export default {
         type: 'success',
         duration: 2500
       })
+      
     },
     handleBeforeUpload(file) {
       this.newTableData = []
     },
     handleSecondBeforeUpload(data) {
-      this.actSpeclinkUploadParam.specCode = data.specCode
+      // this.actSpeclinkUploadParam.specCode = data.specCode
     },
     refresh(data) {
       console.log('刷新', data)
@@ -1324,8 +1325,8 @@ export default {
       })
     },
     // 广告位——上传
-    adUpload() {
-      // this.linkLoading = true
+    adUpload(data) {
+      this.actSpeclinkUploadParam.specCode = data.specCode
     },
     // 抽奖配置修改触发事件
     drawInfoChange(date, t) {
