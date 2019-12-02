@@ -66,6 +66,7 @@
       </el-form-item>
       <el-form-item label="图片地址" >
         <el-upload
+          ref="actImageUpload"
           :on-success="uploadSuccess"
           :show-file-list="true"
           :file-list="form.fileList"
@@ -310,6 +311,7 @@ export default {
     // 文件上传成功回调
     uploadSuccess(res, file, fileList) {
       console.log('res', res, file, fileList)
+      this.$refs.actImageUpload.clearFiles()
       this.form.showImage = res.dataMap.fileUrl
     },
     handleExceed(files, fileList) {

@@ -54,6 +54,7 @@
         >搜索</el-button>
         <el-upload
           v-permission="['ADMIN', 'ACT_MALL_ALL', 'ACT_MALL_EXCEL_SYNC']"
+          ref="actMallUpload"
           :limit="1"
           :show-file-list="false"
           :action="
@@ -1177,6 +1178,7 @@ export default {
     },
     handleSuccess(res, file, fileList) {
       this.handleSelect('1', 1)
+      this.$refs.actMallUpload.clearFiles()
       this.$notify({
         title: '上传成功',
         type: 'success',
