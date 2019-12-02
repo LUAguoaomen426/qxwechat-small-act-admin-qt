@@ -224,6 +224,7 @@
           >删除</el-button>
           <el-upload
             v-permission="['ADMIN', 'ACT_SPEC_ALL', 'ACT_SPEC_UPLOAD']"
+            :ref="'su'+scope.row.specCode"
             :limit="1"
             :show-file-list="false"
             :headers="myHeaders"
@@ -1184,12 +1185,12 @@ export default {
     },
     handleSecondSuccess(res, file, fileList) {
       this.handleSelect('2', 2)
+      this.$refs['su' + this.actSpeclinkUploadParam.specCode].clearFiles()
       this.$notify({
         title: '上传成功',
         type: 'success',
         duration: 2500
       })
-      
     },
     handleBeforeUpload(file) {
       this.newTableData = []
