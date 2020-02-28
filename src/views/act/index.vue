@@ -205,7 +205,8 @@ export default {
         channelId: data.channelId,
         configData: data.configData,
         actEndTime: data.actEndTime,
-        fileList: [{ name: data.showImage, url: data.showImage }]
+        fileList: [{ name: data.showImage, url: data.showImage }],
+        showFlag: data.showFlag
       }
       _this.dialog = true
     },

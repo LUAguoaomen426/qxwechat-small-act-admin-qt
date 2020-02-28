@@ -64,20 +64,32 @@
       <el-form-item label="url">
         <el-input v-model="form.linkUrl"/>
       </el-form-item>
-      <el-form-item label="图片地址" >
-        <el-upload
-          :on-success="uploadSuccess"
-          :show-file-list="true"
-          :file-list="form.fileList"
-          :on-exceed="handleExceed"
-          :before-remove="beforeRemove"
-          :limit="1"
-          class="upload-demo"
-          list-type="picture-card"
-          action="https://wxxcx-api.chinaredstar.com/file/upload">
-          <el-button size="small" type="primary">点击上传</el-button>
-        </el-upload>
-      </el-form-item>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="图片地址" >
+            <el-upload
+              :on-success="uploadSuccess"
+              :show-file-list="true"
+              :file-list="form.fileList"
+              :on-exceed="handleExceed"
+              :before-remove="beforeRemove"
+              :limit="1"
+              class="upload-demo"
+              list-type="picture-card"
+              action="https://wxxcx-api.chinaredstar.com/file/upload">
+              <el-button size="small" type="primary">点击上传</el-button>
+            </el-upload>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="是否在活动列表显示" >
+            <el-switch
+              v-model="form.showFlag"
+              active-color="#13ce66"
+              inactive-color="#ff4949"/>
+          </el-form-item>
+        </el-col>
+      </el-row>
       <el-collapse accordion>
 
         <!--<el-collapse-item>
@@ -160,6 +172,7 @@ export default {
         moduleType: '',
         showImage: '',
         linkUrl: '',
+        showFlag: false,
         orderLevel: '',
         createTime: '',
         updateTime: '',
@@ -286,6 +299,7 @@ export default {
         moduleType: '',
         showImage: '',
         linkUrl: '',
+        showFlag: false,
         orderLevel: '',
         createTime: '',
         updateTime: '',
