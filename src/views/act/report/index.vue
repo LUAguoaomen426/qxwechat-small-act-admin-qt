@@ -46,13 +46,14 @@
                   size="mini"
                   icon="el-icon-search"
                   @click="onPVUVSubmit"
-                >查询</el-button>
+                >查询
+                </el-button>
                 <el-button
                   type="primary"
                   size="mini"
                   @click="onPVUVActualSubmit"
                 >
-                  <svg-icon icon-class="real" />&nbsp;实时查询
+                  <svg-icon icon-class="real"/>&nbsp;实时查询
                 </el-button>
               </el-form-item>
             </el-form>
@@ -70,7 +71,7 @@
             :data="tablePVUVData"
             style="width: 100%"
           >
-            <el-table-column type="index" />
+            <el-table-column type="index"/>
             <el-table-column
               prop="date"
               label="时间段"
@@ -184,6 +185,45 @@
           </el-table>
         </el-tab-pane>
         <el-tab-pane
+          v-loading="groupLoading"
+          v-if="$route.query.actCode === '202005-category'"
+          label="榜单值"
+          name="topList"
+        >
+          <el-form :inline="true" :model="filters">
+            <el-form-item>
+              <el-select v-model="filters.value1" clearable placeholder="请选择榜单" @change="getRole($event)">
+                <el-option
+                  v-for="item in select1"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"/>
+              </el-select>
+              <el-select
+                v-model="filters.value2"
+                :loading="loading"
+                filterable
+                placeholder="请选折商品"
+                @change="getList($event)">
+                <el-option
+                  v-for="item in select2"
+                  :key="item.no"
+                  :label="item.name"
+                  :value="item.no"/>
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-input
+                v-model="topListVo.billboardNum"
+                type="text"
+                placeholder="请输入榜单值"
+                style="width: 200px;"
+              />
+              <el-button type="primary" size="medium" @click="addTopList('filters')">添加</el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane
           v-loading="ticketLoading"
           v-if="checkPermission(['ADMIN','REPORT_ALL','REPORT_ACT_TICKET_ADD'])"
           label="单品券人数"
@@ -192,7 +232,13 @@
           <el-form label-width="160px">
             <el-row style="padding: 40px;">
               请输入区间：
-              <el-input v-model="minPrice" type="number" style="margin-left: 50px;width: 100px;" class="ticket" size="small" @change="changePrice"/>
+              <el-input
+                v-model="minPrice"
+                type="number"
+                style="margin-left: 50px;width: 100px;"
+                class="ticket"
+                size="small"
+                @change="changePrice"/>
               --
               <el-input v-model="maxPrice" type="number" style="width: 100px;" class="ticket" @change="changePrice"/>
               <div style="margin-top: 10px">
@@ -211,7 +257,8 @@
                     class="ticket"
                   />
                 </div>
-                <div style="margin-left: -30px"><span class="min_price">{{ min_price }}</span>-<span class="max_price">{{ max_price }}</span> 每次增加---
+                <div style="margin-left: -30px"><span class="min_price">{{ min_price }}</span>-<span class="max_price">{{ max_price }}</span>
+                  每次增加---
                   <el-input
                     v-model="midMinNumber"
                     type="number"
@@ -289,7 +336,8 @@
                   size="mini"
                   icon="el-icon-search"
                   @click="onSubmit"
-                >查询</el-button>
+                >查询
+                </el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -304,7 +352,7 @@
             :data="tableData"
             style="width: 100%"
           >
-            <el-table-column type="index" />
+            <el-table-column type="index"/>
             <el-table-column
               prop="date"
               label="时间段"
@@ -414,7 +462,8 @@
                   size="mini"
                   icon="el-icon-search"
                   @click="setSubmit"
-                >查询</el-button>
+                >查询
+                </el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -422,7 +471,7 @@
             :data="tableData1"
             style="width: 100%"
           >
-            <el-table-column type="index" />
+            <el-table-column type="index"/>
             <el-table-column
               prop="city"
               label="省份"
@@ -548,7 +597,8 @@
                 class="filter-item"
                 icon="el-icon-search"
                 @click="toQuerySignUpData"
-              >查询</el-button>
+              >查询
+              </el-button>
             </el-form-item>
             <el-form-item>
               <el-button
@@ -557,7 +607,8 @@
                 class="filter-item"
                 icon="el-icon-download"
                 @click="exportSignUp"
-              >导出</el-button>
+              >导出
+              </el-button>
             </el-form-item>
           </el-form>
           <el-table
@@ -598,11 +649,13 @@
                 <el-tag
                   v-if="scope.row.cliType == 2"
                   type="success"
-                >{{ cliTypeStr[scope.row.cliType] }}</el-tag>
+                >{{ cliTypeStr[scope.row.cliType] }}
+                </el-tag>
                 <el-tag
                   v-if="scope.row.cliType == 3"
                   type="info"
-                >{{ cliTypeStr[scope.row.cliType] }}</el-tag>
+                >{{ cliTypeStr[scope.row.cliType] }}
+                </el-tag>
               </template>
             </el-table-column>
             <el-table-column
@@ -684,7 +737,8 @@
                     type="success"
                     icon="el-icon-search"
                     @click="toQuery"
-                  >搜索</el-button>
+                  >搜索
+                  </el-button>
                 </el-form-item>
                 <el-form-item>
                   <el-button
@@ -693,7 +747,8 @@
                     size="mini"
                     icon="el-icon-download"
                     @click="exportBtn"
-                  >导出</el-button>
+                  >导出
+                  </el-button>
                 </el-form-item>
               </div>
             </el-form>
@@ -701,11 +756,11 @@
           <el-table
             v-loading="loading"
             :data="data"
-            :default-sort = "{prop: 'id', order: 'descending'}"
+            :default-sort="{prop: 'id', order: 'descending'}"
             style="width: 100%"
             @sort-change="tableChange"
           >
-            <el-table-column type="index" />
+            <el-table-column type="index"/>
             <el-table-column
               prop="id"
               label="编号"
@@ -783,7 +838,8 @@
                     type="success"
                     icon="el-icon-search"
                     @click="initBtnSummaryPane"
-                  >搜索</el-button>
+                  >搜索
+                  </el-button>
                 </el-form-item>
                 <el-form-item>
                   <el-button
@@ -791,7 +847,8 @@
                     type="primary"
                     icon="el-icon-download"
                     @click="exportBtnSummary"
-                  >导出</el-button>
+                  >导出
+                  </el-button>
                 </el-form-item>
               </div>
             </el-form>
@@ -799,11 +856,11 @@
           <el-table
             v-loading="loading"
             :data="data"
-            :default-sort = "{prop: 'id', order: 'descending'}"
+            :default-sort="{prop: 'id', order: 'descending'}"
             style="width: 100%"
             @sort-change="tableChangeSummary"
           >
-            <el-table-column type="index" />
+            <el-table-column type="index"/>
             <el-table-column
               prop="id"
               label="编号"
@@ -857,7 +914,9 @@ import {
   getSignUpFormParam,
   getSignUpData,
   getBtnDailyReport,
-  getBtnSummary
+  getBtnSummary,
+  findGoodsByBillboard,
+  addTopList
 } from '@/api/report'
 import countTo from 'vue-count-to'
 import { dateFormat } from '@/utils/formatDate'
@@ -966,10 +1025,28 @@ export default {
       cliTypeStr: cliTypeStr,
       query: {},
       loading: false,
-      viewTime: []
+      viewTime: [],
+      // 二级联动
+      select1: [
+        { value: 'BB001', label: '设计榜单' },
+        { value: 'BB002', label: '绿色榜单' },
+        { value: 'BB003', label: '智能榜单' }
+      ],
+      loading: false,
+      filters: {
+        value1: '',
+        value2: ''
+      },
+      select2: [],
+      topListVo: {
+        billboardNo: '',
+        goodsNo: '',
+        billboardNum: ''
+      }
     }
   },
-  created() {},
+  created() {
+  },
   mounted: function() {
     var now = new Date()
     var end = new Date(now.getTime() + 3600 * 1000 * 24)
@@ -1022,7 +1099,7 @@ export default {
           this.totalNumberStart = this.totalNumberEnd
           this.extraNumberEnd = this.extraNumberEnd + parseInt(this.peopleNum)
           this.totalNumberEnd =
-            parseInt(this.groupNumberEnd) + parseInt(this.extraNumberEnd)
+              parseInt(this.groupNumberEnd) + parseInt(this.extraNumberEnd)
           this.$refs.countTo2.start()
           this.$refs.countTo3.start()
         })
@@ -1049,8 +1126,8 @@ export default {
       }
       if (
         parseInt(lowMinNumber) > parseInt(lowMaxNumber) ||
-        parseInt(midMinNumber) > parseInt(midMaxNumber) ||
-        parseInt(highMinNumber) > parseInt(highMaxNumber)
+          parseInt(midMinNumber) > parseInt(midMaxNumber) ||
+          parseInt(highMinNumber) > parseInt(highMaxNumber)
       ) {
         this.$message({
           message: '请输入正确的增长区间，前面的不能比后面的大。',
@@ -1462,28 +1539,67 @@ export default {
         this.params['isAscSummary'] = column.order === 'ascending'
         this.initBtnSummaryPane()
       }
+    },
+    getRole(prov) {
+      console.log(prov)
+      var allrole = []
+      this.topListVo.billboardNo = prov
+      findGoodsByBillboard(this.$route.query.actCode, prov)
+        .then(res => {
+          allrole = res.dataMap.goodsvo
+          this.select2 = allrole
+        })
+        .catch(err => {
+          console.log(err.response.data.message)
+        })
+    },
+    getList(opt) {
+      this.topListVo.goodsNo = opt
+      console.log('------>>>opt', opt)
+    },
+    addTopList(){
+      console.log(('----------->>>topListVo', this.topListVo))
+      if (this.topListVo.billboardNo !== '' && this.topListVo.goodsNo !== '' && this.topListVo.billboardNum !== '') {
+        addTopList(this.$route.query.actCode, this.topListVo)
+          .then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '添加成功',
+                type: 'success'
+              })
+            }
+          })
+          .catch(err => {
+            console.log(err.response.data.message)
+          })
+      } else {
+        return '参数为空'
+      }
     }
   }
 }
 </script>
 
 <style scoped>
-.number {
-  color: #30b08f;
-  margin: 10px 0;
-  font-size: 65px;
-}
-.page-container label {
-  font-size: 14px;
-  color: #5e6d82;
-  line-height: 1.5em;
-}
-.page-container b {
-  margin-left: 40px;
-  font-size: 15px;
-  line-height: 1.5em;
-}
-.page-container {
-  margin: 10px 5px 10px;
-}
+  .number {
+    color: #30b08f;
+    margin: 10px 0;
+    font-size: 65px;
+  }
+
+  .page-container label {
+    font-size: 14px;
+    color: #5e6d82;
+    line-height: 1.5em;
+  }
+
+  .page-container b {
+    margin-left: 40px;
+    font-size: 15px;
+    line-height: 1.5em;
+  }
+
+  .page-container {
+    margin: 10px 5px 10px;
+  }
 </style>
