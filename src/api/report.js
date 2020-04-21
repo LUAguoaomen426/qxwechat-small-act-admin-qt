@@ -107,3 +107,11 @@ export function addTopList(source, data) {
     data
   })
 }
+
+export function findBillboardNum(source, goodsNo, data) {
+  return request({
+    url: 'api/findBillboardNum?source=' + source + '&goodsNo=' + goodsNo,
+    method: 'get',
+    data
+  })
+}

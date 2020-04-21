@@ -213,11 +213,19 @@
               </el-select>
             </el-form-item>
             <el-form-item>
+              原榜单值：
+              <el-input
+                v-model="startBillboardNum"
+                type="text"
+                disabled
+                style="width: 200px;"
+              />
               <el-input
                 v-model="topListVo.billboardNum"
                 type="text"
-                placeholder="请输入榜单值"
+                placeholder="请输入新增榜单值"
                 style="width: 200px;"
+                onkeyup="value=value.replace(/[^\d]/g,'')"
               />
               <el-button type="primary" size="medium" @click="addTopList('filters')">添加</el-button>
             </el-form-item>
@@ -916,7 +924,8 @@ import {
   getBtnDailyReport,
   getBtnSummary,
   findGoodsByBillboard,
-  addTopList
+  addTopList,
+  findBillboardNum
 } from '@/api/report'
 import countTo from 'vue-count-to'
 import { dateFormat } from '@/utils/formatDate'
@@ -1042,7 +1051,8 @@ export default {
         billboardNo: '',
         goodsNo: '',
         billboardNum: ''
-      }
+      },
+      startBillboardNum: ''
     }
   },
   created() {
@@ -1556,6 +1566,13 @@ export default {
     getList(opt) {
       this.topListVo.goodsNo = opt
       console.log('------>>>opt', opt)
+      findBillboardNum(this.$route.query.actCode, opt)
+        .then(res => {
+          this.startBillboardNum = res.dataMap.integer
+        })
+        .catch(err => {
+          console.log(err.response.data.message)
+        })
     },
     addTopList(){
       console.log(('----------->>>topListVo', this.topListVo))
