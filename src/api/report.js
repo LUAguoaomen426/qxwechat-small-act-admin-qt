@@ -91,3 +91,27 @@ export function getBtnSummary(data) {
     params: data
   })
 }
+
+export function findGoodsByBillboard(source, billboardNo, data) {
+  return request({
+    url: 'api/findGoodsByBillboard?source=' + source + '&billboardNo=' + billboardNo,
+    method: 'get',
+    data
+  })
+}
+
+export function addTopList(source, data) {
+  return request({
+    url: 'api/addTopList?source=' + source,
+    method: 'post',
+    data
+  })
+}
+
+export function findBillboardNum(source, goodsNo, data) {
+  return request({
+    url: 'api/findBillboardNum?source=' + source + '&goodsNo=' + goodsNo,
+    method: 'get',
+    data
+  })
+}

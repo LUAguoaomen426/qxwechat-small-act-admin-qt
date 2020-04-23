@@ -239,7 +239,7 @@
               size="mini"
               type="text"
               @click="adUpload(scope.row)"
-            >上传</el-button>
+            >上传商场</el-button>
           </el-upload>
         </template>
       </el-table-column>
@@ -1194,7 +1194,7 @@ export default {
       this.newTableData = []
     },
     handleSecondBeforeUpload(data) {
-      
+
     },
     refresh(data) {
       console.log('刷新', data)
